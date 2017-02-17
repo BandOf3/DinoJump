@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file:///coding/android/DinoJump/DinoJump.iml" filepath="/coding/android/DinoJump/DinoJump.iml" />
+      <module fileurl="file:///coding/android/DinoJump/app/app.iml" filepath="/coding/android/DinoJump/app/app.iml" />
+    </modules>
+  </component>
+</project>
