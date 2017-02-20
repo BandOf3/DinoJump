@@ -15,10 +15,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupView();
     }
 
     private void setupView() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mPlayButton = (Button) findViewById(R.id.play_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
