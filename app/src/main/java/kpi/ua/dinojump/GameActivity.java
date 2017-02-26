@@ -1,12 +1,13 @@
 package kpi.ua.dinojump;
 
-import android.content.Context;
-import android.graphics.Point;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Display;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import kpi.ua.dinojump.entities.BaseEntity;
 import kpi.ua.dinojump.view.GameView;
+import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -19,18 +20,17 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void init(Context context) {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        mGameView = new GameView(context, size.x, size.y);
+        mGameView = new GameView(context);
+        BaseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprite100);
+        double newWidth = BaseBitmap.getWidth();
+        BaseEntity.Scale = newWidth / BaseEntity.BaseWidth;
         setContentView(mGameView);
     }
 
-    //pausing the game when activity is paused
     @Override
     protected void onPause() {
         super.onPause();
-        mGameView.pause();
+        mGameView.Stop();
     }
 
     //running the game when activity is resumed

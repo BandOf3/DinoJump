@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/splash"
-    tools:context="kpi.ua.dinojump.MainActivity">
+    tools:context=".MainActivity">
 
     <Button
         android:id="@+id/play_button"
@@ -15,7 +15,7 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:id="@+id/high_score_button"
+        android:id="@+id/buttonScore"
         android:text="High Score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
