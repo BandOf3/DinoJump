@@ -22,15 +22,15 @@ public class GameActivity extends AppCompatActivity {
     public void init(Context context) {
         mGameView = new GameView(context);
         BaseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprite100);
-        double newWidth = BaseBitmap.getWidth();
-        BaseEntity.Scale = newWidth / BaseEntity.BaseWidth;
+        BaseEntity.Scale = (double) BaseBitmap.getWidth() / BaseEntity.BaseWidth;
         setContentView(mGameView);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mGameView.Stop();
+        mGameView.pause();
+//        mGameView.Stop();
     }
 
     //running the game when activity is resumed
