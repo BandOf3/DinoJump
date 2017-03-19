@@ -96,31 +96,6 @@ public class GameView extends SurfaceView {
 
     private void onKeyUp() {
         tRex.update(Long.valueOf(1), Dino.Status.DUCKING);
-//        if (this.isRunning()) {
-//            tRex.endJump();
-//        } else if (this.crashed) {
-//             Check that enough time has elapsed before allowing jump key to restart.
-//            long deltaTime = new Date().getTime() - this.time.getTime();
-//            if (deltaTime >= Runner.config.GAMEOVER_CLEAR_TIME) {
-//                this.restart();
-//            }
-//        } else if (this.paused) {
-//             Reset the jump state
-//            tRex.reset();
-//            this.play();
-//        }
-    }
-
-    private void play() {
-        Log("play");
-        if (!this.crashed) {
-            this.activated = true;
-            this.paused = false;
-            tRex.update(0, Dino.Status.RUNNING);
-            tRex.update(0, Dino.Status.DUCKING);
-            this.time = new Date();
-            this.update();
-        }
     }
 
     private void restart() {
@@ -133,20 +108,16 @@ public class GameView extends SurfaceView {
             this.distanceRan = 0;
             this.setSpeed(Runner.config.SPEED);
             this.time = new Date();
-            this.distanceMeter.reset(this.highestScore);
+            this.distanceMeter.reset();
             this.horizon.reset();
             this.tRex.reset();
             this.update();
         }
     }
 
-    public void resume() {
-        Log("SSStart");
-    }
+    public void resume() {}
 
-    public void Stop() {
-        Log("SSStop");
-    }
+    public void Stop() {}
 
     private void gameOver() {
         vibrator.vibrate(200);
@@ -161,6 +132,13 @@ public class GameView extends SurfaceView {
         }
         // Reset the time clock.
         this.time = new Date();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        restart();
     }
 
     private void Draw() {

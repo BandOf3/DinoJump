@@ -21,7 +21,7 @@ public class GameActivity extends AppCompatActivity {
 
     public void init(Context context) {
         mGameView = new GameView(context);
-        BaseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprite100);
+        BaseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dino_sprite);
         BaseEntity.Scale = (double) BaseBitmap.getWidth() / BaseEntity.BaseWidth;
         setContentView(mGameView);
     }

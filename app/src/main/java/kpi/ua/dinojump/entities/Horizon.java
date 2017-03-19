@@ -115,7 +115,7 @@ public class Horizon extends BaseEntity {
                 currentSpeed < obstacleType.minSpeed) {
             this.addNewObstacle(currentSpeed);
         } else {
-            this.obstacles.add(new Obstacle(obstacleType, this.dimensions, this.gapCoefficient, currentSpeed));
+            this.obstacles.add(new Obstacle(Obstacle.types.getObstacleTypes(2), this.dimensions, this.gapCoefficient, currentSpeed));
             this.obstacleHistory.add(obstacleType.type);
             if (this.obstacleHistory.size() > 1) {
                 obstacleHistory.remove(0);
@@ -161,5 +161,6 @@ public class Horizon extends BaseEntity {
 
     public void reset() {
         this.horizonLine.reset();
+        this.obstacles.clear();
     }
 }

@@ -160,8 +160,8 @@ public class ItemDistanceMeter extends BaseEntity {
         highScore = getActualDistance(highest);
     }
 
-    public void reset(double highest) {
-        update(0);
+    public void reset() {
+        update(Long.valueOf(0));
         achievement = false;
     }
 }

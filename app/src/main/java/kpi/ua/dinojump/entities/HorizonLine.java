@@ -3,7 +3,6 @@ package kpi.ua.dinojump.entities;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Pair;
 
 import kpi.ua.dinojump.view.GameView;
 
