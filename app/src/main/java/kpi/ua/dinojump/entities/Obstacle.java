@@ -197,9 +197,7 @@ public class Obstacle extends BaseEntity {
         return this.xPos + this.width > 0;
     }
 
-    @Override
     public void update(Object... args) {
-        super.update(args);
         long deltaTime = 0;
         double speed = 0;
         if (args.length > 0) {
@@ -229,9 +227,7 @@ public class Obstacle extends BaseEntity {
         }
     }
 
-    @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
         int sourceWidth = this.typeConfig.width;
         int sourceHeight = this.typeConfig.height;
         int sourceX = (int) ((sourceWidth * this.size) * (0.5 * (this.size - 1)) +

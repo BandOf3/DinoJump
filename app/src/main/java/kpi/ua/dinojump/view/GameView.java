@@ -4,17 +4,19 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.util.AttributeSet;
+import android.os.Vibrator;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TooManyListenersException;
+
 import kpi.ua.dinojump.Runner;
 import kpi.ua.dinojump.entities.BaseEntity;
 import kpi.ua.dinojump.entities.Dino;
@@ -23,7 +25,7 @@ import kpi.ua.dinojump.entities.ItemDistanceMeter;
 
 
 public class GameView extends SurfaceView {
-
+    private final Vibrator vibrator;
     private boolean _debug = true;
     private boolean collision = false;
     private double distanceRan;
@@ -50,19 +52,10 @@ public class GameView extends SurfaceView {
     private static int newFPS = 60;
     private static volatile boolean running = false;
 
-    public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        Init();
-    }
-
-    public GameView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        Init();
-    }
-
     public GameView(Context context) {
         super(context);
         Init();
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     private void Init() {
@@ -70,22 +63,16 @@ public class GameView extends SurfaceView {
         currentSpeed = Runner.config.SPEED;
         Horizon horizon = new Horizon(dimensions, Runner.config.GAP_COEFFICIENT);
         this.horizon = horizon;
-        ItemDistanceMeter d = new ItemDistanceMeter(Runner.spritePos.TEXT_SPRITE, dimensions.x);
-        this.distanceMeter = d;
+        this.distanceMeter = new ItemDistanceMeter(Runner.spritePos.TEXT_SPRITE, dimensions.x);
         Dino tRex = new Dino(Runner.spritePos.TREX);
         this.tRex = tRex;
-        this.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        onKeyDown();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        onKeyUp();
-                        break;
-                }
-                return true;
+        final Context context = getContext();
+        this.setOnTouchListener(new OnSwipeTouchListener(context) {
+            public void onSwipeTop() {
+                onKeyDown();
+            }
+            public void onSwipeBottom() {
+                onKeyUp();
             }
         });
         update();
@@ -106,19 +93,20 @@ public class GameView extends SurfaceView {
     }
 
     private void onKeyUp() {
-        if (this.isRunning()) {
-            tRex.endJump();
-        } else if (this.crashed) {
-            // Check that enough time has elapsed before allowing jump key to restart.
-            long deltaTime = new Date().getTime() - this.time.getTime();
-            if (deltaTime >= Runner.config.GAMEOVER_CLEAR_TIME) {
-                this.restart();
-            }
-        } else if (this.paused) {
-            // Reset the jump state
-            tRex.reset();
-            this.play();
-        }
+        tRex.update(Long.valueOf(1), Dino.Status.DUCKING);
+//        if (this.isRunning()) {
+//            tRex.endJump();
+//        } else if (this.crashed) {
+//             Check that enough time has elapsed before allowing jump key to restart.
+//            long deltaTime = new Date().getTime() - this.time.getTime();
+//            if (deltaTime >= Runner.config.GAMEOVER_CLEAR_TIME) {
+//                this.restart();
+//            }
+//        } else if (this.paused) {
+//             Reset the jump state
+//            tRex.reset();
+//            this.play();
+//        }
     }
 
     private void play() {
@@ -127,6 +115,7 @@ public class GameView extends SurfaceView {
             this.activated = true;
             this.paused = false;
             tRex.update(0, Dino.Status.RUNNING);
+            tRex.update(0, Dino.Status.DUCKING);
             this.time = new Date();
             this.update();
         }
@@ -155,6 +144,21 @@ public class GameView extends SurfaceView {
 
     public void Stop() {
         Log("SSStop");
+    }
+
+    private void gameOver() {
+        vibrator.vibrate(200);
+        Log("game over");
+        this.stop();
+        this.crashed = true;
+        this.tRex.update(100, Dino.Status.CRASHED);
+        // Update the high score.
+        if (this.distanceRan > this.highestScore) {
+            this.highestScore = Math.ceil(this.distanceRan);
+            this.distanceMeter.setHighScore(this.highestScore);
+        }
+        // Reset the time clock.
+        this.time = new Date();
     }
 
     private void Draw() {
@@ -228,7 +232,7 @@ public class GameView extends SurfaceView {
                 this.horizon.update(deltaTime, this.currentSpeed, hasObstacles);
             }
             // Check for collisions.
-            //boolean collision = hasObstacles && checkForCollision(this.horizon.obstacles[0], this.tRex);
+//            boolean collision = hasObstacles && checkForCollision(this.horizon.obstacles[0], this.tRex);
             boolean collision = false;
             if (!collision) {
                 this.distanceRan += this.currentSpeed * deltaTime * FPS / 1000;
@@ -238,11 +242,12 @@ public class GameView extends SurfaceView {
             } else {
                 this.stop();
                 this.stopTimer();
+                gameOver();
             }
             this.distanceMeter.update(deltaTime, Math.ceil(this.distanceRan));
         }
         if (!this.crashed) {
-            this.tRex.update(deltaTime);
+            this.tRex.update(deltaTime / 2);
             startTimer();
         } else {
             stopTimer();
@@ -320,4 +325,5 @@ public class GameView extends SurfaceView {
         if (_debug)
             Log.i(_tag, str);
     }
+
 }

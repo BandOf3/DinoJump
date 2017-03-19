@@ -29,8 +29,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mGameView.pause();
-//        mGameView.Stop();
+        mGameView.Stop();
     }
 
     //running the game when activity is resumed

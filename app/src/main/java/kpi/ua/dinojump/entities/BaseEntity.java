@@ -1,20 +1,14 @@
 package kpi.ua.dinojump.entities;
 
-import android.graphics.Canvas;
 import android.graphics.Rect;
 
-public class BaseEntity {
+public abstract class BaseEntity {
     public static int BaseWidth = 1204;
     public static double Scale = 1.;
     public static double ScaleTarget = 1;
     public static int startX = 0;
     public static int startY = 0;
 
-    public void update(Object... args) {
-    }
-
-    public void draw(Canvas canvas) {
-    }
 
     public static Rect getScaledSource(int l, int t, int w, int h) {
         int rl = (int) (l * Scale);

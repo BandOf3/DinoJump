@@ -41,9 +41,7 @@ public class Cloud extends BaseEntity {
                 config.MIN_SKY_LEVEL);
     }
 
-    @Override
     public void update(Object... args) {
-        super.update(args);
         double speed = 0;
         if (args.length > 1) {
             speed = (double) args[1];
@@ -57,7 +55,6 @@ public class Cloud extends BaseEntity {
         }
     }
 
-    @Override
     public void draw(Canvas canvas) {
         int sourceWidth = config.WIDTH;
         int sourceHeight = config.HEIGHT;

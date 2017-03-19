@@ -43,21 +43,6 @@ public class HorizonLine extends BaseEntity {
         }
     }
 
-    private int counter = 0;
-    private long cTime;
-    private double cSpeed;
-
-    public Pair<Long, Double> getAvgDeltaTime() {
-        if (counter <= 0)
-            counter = 1;
-        Pair<Long, Double> ret = new Pair<>(cTime / counter, cSpeed / counter);
-        counter = 0;
-        cTime = 0;
-        cSpeed = 0;
-        return ret;
-    }
-
-    @Override
     public void update(Object... args) {
         long deltaTime = 0;
         double speed = 0;
@@ -66,9 +51,6 @@ public class HorizonLine extends BaseEntity {
             if (args.length > 1)
                 speed = (double) args[1];
         }
-        cSpeed += speed;
-        cTime += deltaTime;
-        counter++;
         int fps = GameView.FPS;
         double increment = speed * fps * deltaTime / 1000;
         if (xPos[0] <= 0) {
@@ -78,7 +60,6 @@ public class HorizonLine extends BaseEntity {
         }
     }
 
-    @Override
     public void draw(Canvas canvas) {
         Rect sRect1 = getScaledSource(sourceXPos[0], spritePos.y, dimensions.WIDTH, dimensions.HEIGHT);
         Rect tRect1 = getScaledTarget((int) xPos[0], yPos, dimensions.WIDTH, dimensions.HEIGHT);

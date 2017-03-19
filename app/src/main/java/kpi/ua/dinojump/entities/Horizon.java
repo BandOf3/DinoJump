@@ -17,9 +17,7 @@ public class Horizon extends BaseEntity {
         public static int MAX_CLOUDS = 6;
     }
 
-    private Point spritePos;
     private Point dimensions;
-    private long runningTime;
     private double cloudSpeed;
     private List<Cloud> clouds;
     private double cloudFrequency;
@@ -49,9 +47,7 @@ public class Horizon extends BaseEntity {
                 this.dimensions.x));
     }
 
-    @Override
     public void update(Object... args) {
-        super.update(args);
         long deltaTime = 0;
         double currentSpeed = 0;
         boolean updateObstacles = false;
@@ -64,7 +60,6 @@ public class Horizon extends BaseEntity {
                 }
             }
         }
-        this.runningTime += deltaTime;
         this.horizonLine.update(deltaTime, currentSpeed);
         this.updateClouds(deltaTime, currentSpeed);
         if (updateObstacles) {
@@ -72,11 +67,11 @@ public class Horizon extends BaseEntity {
         }
     }
 
-    @Override
     public void draw(Canvas canvas) {
         for (Cloud c : clouds) {
             c.draw(canvas);
         }
+
         horizonLine.draw(canvas);
         for (Obstacle o : obstacles) {
             o.draw(canvas);
@@ -85,21 +80,19 @@ public class Horizon extends BaseEntity {
 
     private void updateObstacles(long deltaTime, double currentSpeed) {
         // Obstacles, move to Horizon layer.
-        //var updatedObstacles = this.obstacles.slice(0);
         int delObs = -1;
+
         for (int i = 0; i < this.obstacles.size(); i++) {
             Obstacle obstacle = this.obstacles.get(i);
             obstacle.update(deltaTime, currentSpeed);
             // Clean up existing obstacles.
             if (obstacle.remove) {
-                //updatedObstacles.shift();
                 delObs = i;
             }
         }
-        if (delObs >=0 && delObs < obstacles.size())
+        if (delObs >= 0 && delObs < obstacles.size())
             obstacles.remove(delObs);
-        //this.obstacles = updatedObstacles;
-        if (this.obstacles.size() > 0) {
+        if (!this.obstacles.isEmpty()) {
             Obstacle lastObstacle = this.obstacles.get(this.obstacles.size() - 1);
             if (lastObstacle != null && !lastObstacle.followingObstacleCreated &&
                     lastObstacle.isVisible() &&
@@ -109,7 +102,6 @@ public class Horizon extends BaseEntity {
                 lastObstacle.followingObstacleCreated = true;
             }
         } else {
-            // Create new obstacles.
             this.addNewObstacle(currentSpeed);
         }
     }
@@ -153,11 +145,9 @@ public class Horizon extends BaseEntity {
                     this.cloudFrequency > Math.random()) {
                 this.addCloud();
             }
-
-            List<Cloud> a = new ArrayList(clouds);
-            for(int i = 0; i < a.size(); i++) {
-                Cloud aa = a.get(i);
-                if (aa.remove) {
+            List<Cloud> newClouds = new ArrayList(clouds);
+            for (int i = 0; i < newClouds.size(); i++) {
+                if (newClouds.get(i).remove) {
                     clouds.remove(i);
                     break;
                 }
@@ -166,7 +156,6 @@ public class Horizon extends BaseEntity {
     }
 
     public void reset() {
-        //this.obstacles = [];
         this.horizonLine.reset();
     }
 }

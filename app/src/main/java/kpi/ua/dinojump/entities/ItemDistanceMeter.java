@@ -72,9 +72,7 @@ public class ItemDistanceMeter extends BaseEntity {
                 (this.maxScoreUnits + 1));
     }
 
-    @Override
     public void update(Object... args) {
-        super.update(args);
         long deltaTime = 0;
         double distance = 0;
         if (args.length > 0) {
@@ -123,9 +121,7 @@ public class ItemDistanceMeter extends BaseEntity {
         }
     }
 
-    @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
         int dis = (int) distance;
         if (paint) {
             for (int i = 0; i < this.maxScoreUnits; i++) {
