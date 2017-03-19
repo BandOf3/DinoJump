@@ -191,6 +191,7 @@ public class Dino extends BaseEntity {
     }
 
     public void draw(Canvas canvas) {
+        Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
         int sourceX = x;
         int sourceY = y;
         int sourceWidth = this.ducking && this.status != Status.CRASHED ?
@@ -218,7 +219,7 @@ public class Dino extends BaseEntity {
                     BaseBitmap,
                     sRect,
                     tRect,
-                    null);
+                    bitmapPaint);
 
         }
     }
