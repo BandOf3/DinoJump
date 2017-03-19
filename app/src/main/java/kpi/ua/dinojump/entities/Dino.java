@@ -25,7 +25,7 @@ public class Dino extends BaseEntity {
     public boolean jumping;
     private int currentFrame;
     private int groundYPos;
-
+    private Rect collisionBox;
     private Point spritePos;
     private int x;
     private int y;
@@ -85,6 +85,7 @@ public class Dino extends BaseEntity {
         this.reachedMinHeight = false;
         this.speedDrop = false;
         this.jumpCount = 0;
+        collisionBox =  new Rect(xPos, yPos, config.WIDTH, config.HEIGHT);
         init();
     }
 
@@ -103,6 +104,11 @@ public class Dino extends BaseEntity {
         this.draw(this.currentAnimFrames[this.currentFrame], 0);
         this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
         this.timer = 0;
+        collisionBox.left = xPos;
+        collisionBox.top = yPos;
+        collisionBox.right = xPos + ((status == Status.DUCKING) ? config.WIDTH_DUCK : config.WIDTH);
+        collisionBox.bottom = yPos + config.HEIGHT;
+
     }
 
     public void update(long deltaTime, Status status) {
@@ -120,6 +126,11 @@ public class Dino extends BaseEntity {
         this.currentFrame = this.currentFrame ==
                 this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
         this.timer = 0;
+        collisionBox.left = xPos;
+        collisionBox.top = yPos;
+        collisionBox.right = xPos + ((status == Status.DUCKING) ? config.WIDTH_DUCK : config.WIDTH);
+        collisionBox.bottom = yPos + config.HEIGHT;
+
     }
 
     private void updateJump() {
@@ -210,5 +221,9 @@ public class Dino extends BaseEntity {
                     null);
 
         }
+    }
+
+    public Rect getCollisionBox() {
+        return collisionBox;
     }
 }

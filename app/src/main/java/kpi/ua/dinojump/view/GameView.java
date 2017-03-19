@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -22,12 +23,12 @@ import kpi.ua.dinojump.entities.BaseEntity;
 import kpi.ua.dinojump.entities.Dino;
 import kpi.ua.dinojump.entities.Horizon;
 import kpi.ua.dinojump.entities.ItemDistanceMeter;
+import kpi.ua.dinojump.entities.Obstacle;
 
 
 public class GameView extends SurfaceView {
     private final Vibrator vibrator;
     private boolean _debug = true;
-    private boolean collision = false;
     private double distanceRan;
     public int Width;
     private boolean started = false;
@@ -71,6 +72,7 @@ public class GameView extends SurfaceView {
             public void onSwipeTop() {
                 onKeyDown();
             }
+
             public void onSwipeBottom() {
                 onKeyUp();
             }
@@ -206,6 +208,7 @@ public class GameView extends SurfaceView {
     }
 
     private int pCount = 0;
+
     private void update() {
         Date now = new Date();
         long deltaTime = 0;
@@ -226,23 +229,19 @@ public class GameView extends SurfaceView {
                     startGame();
                     pCount = 0;
                 }
-                this.horizon.update((long)0, this.currentSpeed, hasObstacles);
+                this.horizon.update((long) 0, this.currentSpeed, hasObstacles);
             } else {
                 deltaTime = !this.started ? 0 : deltaTime;
                 this.horizon.update(deltaTime, this.currentSpeed, hasObstacles);
             }
             // Check for collisions.
-//            boolean collision = hasObstacles && checkForCollision(this.horizon.obstacles[0], this.tRex);
-            boolean collision = false;
-            if (!collision) {
+            if (playerIsRunInto(hasObstacles)) {
+                gameOver();
+            } else {
                 this.distanceRan += this.currentSpeed * deltaTime * FPS / 1000;
                 if (this.currentSpeed < Runner.config.MAX_SPEED) {
                     this.currentSpeed += Runner.config.ACCELERATION;
                 }
-            } else {
-                this.stop();
-                this.stopTimer();
-                gameOver();
             }
             this.distanceMeter.update(deltaTime, Math.ceil(this.distanceRan));
         }
@@ -253,6 +252,14 @@ public class GameView extends SurfaceView {
             stopTimer();
         }
         Draw();
+    }
+
+    private boolean playerIsRunInto(boolean obstaclesPersistence) {
+        return obstaclesPersistence && checkForCollision(this.horizon.getObstacles().get(0), this.tRex);
+    }
+
+    private boolean checkForCollision(Obstacle obstacle, Dino tRex) {
+        return Rect.intersects(obstacle.getDetectCollision(), tRex.getCollisionBox());
     }
 
     private synchronized void startTimer() {

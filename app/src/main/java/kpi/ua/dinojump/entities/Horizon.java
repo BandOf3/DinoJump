@@ -155,6 +155,10 @@ public class Horizon extends BaseEntity {
         }
     }
 
+    public List<Obstacle> getObstacles() {
+        return obstacles;
+    }
+
     public void reset() {
         this.horizonLine.reset();
     }
