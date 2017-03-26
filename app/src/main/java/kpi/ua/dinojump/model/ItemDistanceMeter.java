@@ -11,7 +11,6 @@ import static kpi.ua.dinojump.model.BaseEntity.*;
 public class ItemDistanceMeter extends BaseEntity{
 
     private boolean paint;
-    private Point spritePos;
     private int x;
     private int y;
     private int maxScore;

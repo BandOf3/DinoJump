@@ -81,7 +81,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         if (mGameOver) {
             mStarted = false;
         } else {
-            mDino.update(deltaTime / 2);
+            mDino.update();
         }
     }
 

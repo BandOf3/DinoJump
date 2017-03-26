@@ -13,7 +13,6 @@ public class Obstacle extends BaseEntity {
 
     private final static double MAX_GAP_COEFFICIENT = 1.5;
     private final static int MAX_OBSTACLE_LENGTH = 3;
-    private Point spritePos;
     private Point dimensions;
     private double gapCoefficient;
     private types.ObstacleTypes typeConfig;

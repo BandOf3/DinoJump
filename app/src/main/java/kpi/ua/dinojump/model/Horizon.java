@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kpi.ua.dinojump.Runner;
-import static kpi.ua.dinojump.model.BaseEntity.*;
 
 
 public class Horizon  extends BaseEntity{
@@ -124,17 +123,17 @@ public class Horizon  extends BaseEntity{
         int numClouds = clouds.size();
         if (numClouds > 0) {
             for (Cloud c : clouds) {
-                c.update(deltaTime, cloudSpeed);
+                c.update(cloudSpeed);
             }
             Cloud lastCloud = clouds.get(numClouds - 1);
             if (numClouds < MAX_CLOUDS &&
-                    (this.dimensions.x - lastCloud.getxPos()) > lastCloud.getCloudGap() &&
+                    (this.dimensions.x - lastCloud.getXPosition()) > lastCloud.getCloudGap() &&
                     this.cloudFrequency > Math.random()) {
                 this.addCloud();
             }
             List<Cloud> newClouds = new ArrayList<>(clouds);
             for (int i = 0; i < newClouds.size(); i++) {
-                if (newClouds.get(i).isRemove()) {
+                if (newClouds.get(i).removeItemFromScreen()) {
                     clouds.remove(i);
                     break;
                 }

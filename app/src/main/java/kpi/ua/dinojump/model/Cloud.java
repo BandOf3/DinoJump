@@ -5,7 +5,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import static kpi.ua.dinojump.Runner.BaseBitmap;
-import static kpi.ua.dinojump.model.BaseEntity.*;
 
 public class Cloud extends BaseEntity {
 
@@ -16,11 +15,11 @@ public class Cloud extends BaseEntity {
     private final static int MIN_SKY_LEVEL = 71;
     private final static int WIDTH = 46;
 
-    private Point spritePos;
+
     private int containerWidth;
     private double xPos;
     private int yPos;
-    private boolean remove;
+    private boolean toRemove;
     private double cloudGap;
 
     public Cloud(Point sprite, int w) {
@@ -28,9 +27,8 @@ public class Cloud extends BaseEntity {
         this.containerWidth = w;
         this.xPos = containerWidth;
         this.yPos = 0;
-        this.remove = false;
-        this.cloudGap = getRandomNum(MIN_CLOUD_GAP,
-                MAX_CLOUD_GAP);
+        this.toRemove = false;
+        this.cloudGap = getRandomNum(MIN_CLOUD_GAP,MAX_CLOUD_GAP);
         this.init();
     }
 
@@ -39,16 +37,16 @@ public class Cloud extends BaseEntity {
                 MIN_SKY_LEVEL);
     }
 
-    public void update(long deltaTime, double speed) {
-        if (!this.remove) {
+    public void update(double speed) {
+        if (!this.toRemove) {
             this.xPos -= Math.ceil(speed);
             if (!this.isVisible()) {
-                this.remove = true;
+                this.toRemove = true;
             }
         }
     }
 
-    public double getxPos() {
+    public double getXPosition() {
         return xPos;
     }
 
@@ -63,8 +61,8 @@ public class Cloud extends BaseEntity {
         return cloudGap;
     }
 
-    public boolean isRemove() {
-        return remove;
+    public boolean removeItemFromScreen() {
+        return toRemove;
     }
 
     private boolean isVisible() {
