@@ -80,9 +80,9 @@ public class Horizon  extends BaseEntity{
             obstacles.remove(delObs);
         if (!this.obstacles.isEmpty()) {
             Obstacle lastObstacle = this.obstacles.get(this.obstacles.size() - 1);
-            if (lastObstacle != null && !lastObstacle.isFollowingObstacleCreated() &&
+            if (lastObstacle != null && !lastObstacle.followingObstacleWasCreated() &&
                     lastObstacle.isVisible() &&
-                    (lastObstacle.getxPos() + lastObstacle.getWidth() + lastObstacle.getGap()) <
+                    (lastObstacle.getXPosition() + lastObstacle.getWidth() + lastObstacle.getGap()) <
                             this.dimensions.x) {
                 this.addNewObstacle(currentSpeed);
                 lastObstacle.setFollowingObstacleCreated(true);

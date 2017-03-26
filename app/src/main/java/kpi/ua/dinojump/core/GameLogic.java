@@ -103,7 +103,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     }
 
     private boolean checkForCollision(Obstacle obstacle, Dino tRex) {
-        return Rect.intersects(obstacle.getDetectCollision(), tRex.getCollisionBox());
+        return Rect.intersects(obstacle.getCollisionDetector(), tRex.getCollisionBox());
     }
 
     private void playIntro() {
