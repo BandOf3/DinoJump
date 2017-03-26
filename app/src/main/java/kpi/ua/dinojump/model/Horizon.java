@@ -9,7 +9,7 @@ import java.util.List;
 import kpi.ua.dinojump.Runner;
 
 
-public class Horizon  extends BaseEntity{
+public class Horizon extends BaseEntity {
 
     private final static double BG_CLOUD_SPEED = 0.2;
     private final static double CLOUD_FREQUENCY = .5;
@@ -54,13 +54,12 @@ public class Horizon  extends BaseEntity{
     }
 
     public void draw(Canvas canvas) {
-        for (Cloud c : clouds) {
-            c.draw(canvas);
+        for (Cloud cloud : clouds) {
+            cloud.draw(canvas);
         }
-
         horizonLine.draw(canvas);
-        for (Obstacle o : obstacles) {
-            o.draw(canvas);
+        for (Obstacle obstacle : obstacles) {
+            obstacle.draw(canvas);
         }
     }
 
@@ -97,11 +96,10 @@ public class Horizon  extends BaseEntity{
         Obstacle.types.ObstacleTypes obstacleType = Obstacle.types.getObstacleTypes(obstacleTypeIndex);
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
-        if (this.duplicateObstacleCheck(obstacleType.type) ||
-                currentSpeed < obstacleType.minSpeed) {
+        if (this.duplicateObstacleCheck(obstacleType.type) ||currentSpeed < obstacleType.minSpeed) {
             this.addNewObstacle(currentSpeed);
         } else {
-            this.obstacles.add(new Obstacle(Obstacle.types.getObstacleTypes(obstacleTypeIndex), this.dimensions, this.gapCoefficient, currentSpeed));
+            this.obstacles.add(new Obstacle(obstacleType,dimensions,gapCoefficient,currentSpeed));
             this.obstacleHistory.add(obstacleType.type);
             if (this.obstacleHistory.size() > 1) {
                 obstacleHistory.remove(0);
@@ -112,8 +110,7 @@ public class Horizon  extends BaseEntity{
     private boolean duplicateObstacleCheck(int nextObstacleType) {
         int duplicateCount = 0;
         for (int i = 0; i < this.obstacleHistory.size(); i++) {
-            duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ?
-                    duplicateCount + 1 : 0;
+            duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ? duplicateCount + 1 : 0;
         }
         return duplicateCount >= Runner.MAX_OBSTACLE_DUPLICATION;
     }
@@ -122,8 +119,8 @@ public class Horizon  extends BaseEntity{
         double cloudSpeed = this.cloudSpeed / 1000 * deltaTime * speed;
         int numClouds = clouds.size();
         if (numClouds > 0) {
-            for (Cloud c : clouds) {
-                c.update(cloudSpeed);
+            for (Cloud cloud : clouds) {
+                cloud.update(cloudSpeed);
             }
             Cloud lastCloud = clouds.get(numClouds - 1);
             if (numClouds < MAX_CLOUDS &&
