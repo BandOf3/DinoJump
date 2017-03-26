@@ -93,7 +93,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     private void gameOver() {
         mGameOver = true;
         mStarted = false;
-        mDino.update(Dino.Status.CRASHED);
+        mDino.update(Dino.DinoState.CRASHED);
         // Update the high score.
         if (mDistanceRan > mHighestScore) {
             mHighestScore = Math.ceil(mDistanceRan);
@@ -169,7 +169,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     @Override
     public void onSwipeBottom() {
-        mDino.update(Dino.Status.DUCKING);
+        mDino.update(Dino.DinoState.DUCKING);
     }
 
     @Override
