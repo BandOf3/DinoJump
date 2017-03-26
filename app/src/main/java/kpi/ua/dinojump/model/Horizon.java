@@ -47,19 +47,7 @@ public class Horizon extends BaseEntity {
                 this.dimensions.x));
     }
 
-    public void update(Object... args) {
-        long deltaTime = 0;
-        double currentSpeed = 0;
-        boolean updateObstacles = false;
-        if (args.length > 0) {
-            deltaTime = (long) args[0];
-            if (args.length > 1) {
-                currentSpeed = (double) args[1];
-                if (args.length > 2) {
-                    updateObstacles = (boolean) args[2];
-                }
-            }
-        }
+    public void update(long deltaTime, double currentSpeed, boolean updateObstacles) {
         this.horizonLine.update(deltaTime, currentSpeed);
         this.updateClouds(deltaTime, currentSpeed);
         if (updateObstacles) {

@@ -41,12 +41,7 @@ public class Cloud extends BaseEntity {
                 config.MIN_SKY_LEVEL);
     }
 
-    public void update(Object... args) {
-        double speed = 0;
-        if (args.length > 1) {
-            speed = (double) args[1];
-        } else {
-        }
+    public void update(long deltaTime, double speed) {
         if (!this.remove) {
             this.xPos -= Math.ceil(speed);
             if (!this.isVisible()) {

@@ -10,15 +10,15 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class HorizonLine extends BaseEntity {
 
-    Point spritePos;
-    int[] sourceXPos = new int[2];
-    double[] xPos = new double[2];
-    int yPos;
+    private Point spritePos;
+    private int[] sourceXPos = new int[2];
+    private double[] xPos = new double[2];
+    private int yPos;
 
-    public static class dimensions {
-        public static int WIDTH = 600;
-        public static int HEIGHT = 12;
-        public static int YPOS = 127;
+    private static class dimensions {
+        static int WIDTH = 600;
+        static int HEIGHT = 12;
+        static int YPOS = 127;
     }
 
     public HorizonLine(Point pos) {
@@ -42,14 +42,7 @@ public class HorizonLine extends BaseEntity {
         }
     }
 
-    public void update(Object... args) {
-        long deltaTime = 0;
-        double speed = 0;
-        if (args.length > 0) {
-            deltaTime = (long) args[0];
-            if (args.length > 1)
-                speed = (double) args[1];
-        }
+    public void update(long deltaTime, double speed) {
         int fps = GameView.FPS;
         double increment = speed * fps * deltaTime / 1000;
         if (xPos[0] <= 0) {

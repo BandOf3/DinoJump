@@ -72,15 +72,11 @@ public class ItemDistanceMeter extends BaseEntity {
                 (this.maxScoreUnits + 1));
     }
 
-    public void update(Object... args) {
-        long deltaTime = 0;
-        double distance = 0;
-        if (args.length > 0) {
-            deltaTime = (long) args[0];
-            if (args.length > 1) {
-                distance = (double) args[1];
-            }
-        }
+    public void update(long deltaTime) {
+        update(deltaTime, 0.);
+    }
+
+    public void update(long deltaTime, double distance) {
         if (!this.achievement) {
             paint = true;
             distance = this.getActualDistance(distance);
@@ -141,7 +137,7 @@ public class ItemDistanceMeter extends BaseEntity {
             deltaX = this.x - (this.maxScoreUnits * 2) * dimensions.WIDTH;
         }
         Rect sRect = getScaledSource(dimensions.WIDTH * value + spritePos.x,
-                                     0 + spritePos.y,
+                                     spritePos.y,
                                      dimensions.WIDTH,
                                      dimensions.HEIGHT);
         Rect tRect = getScaledTarget(dimensions.DEST_WIDTH * digitPos + deltaX,
@@ -152,8 +148,7 @@ public class ItemDistanceMeter extends BaseEntity {
     }
 
     private long getActualDistance(double distance) {
-        long ret = distance > 0 ? Math.round(distance * config.COEFFICIENT) : 0;
-        return ret;
+        return distance > 0 ? Math.round(distance * config.COEFFICIENT) : 0;
     }
 
     public void setHighScore(double highest) {
@@ -161,7 +156,7 @@ public class ItemDistanceMeter extends BaseEntity {
     }
 
     public void reset() {
-        update(Long.valueOf(0));
+        update(0L);
         achievement = false;
     }
 }

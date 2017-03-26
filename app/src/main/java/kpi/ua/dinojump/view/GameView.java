@@ -26,31 +26,19 @@ public class GameView extends SurfaceView implements GameViewContract {
 
     public GameView(Context context) {
         super(context);
-        init();
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         Point dimensions = new Point(600, 150);
         mGameLogic = new GameLogic(getContext(), this, dimensions, FPS);
+        setOnTouchListener(mGameLogic);
     }
 
     public GameLogic getGameLogic() {
         return mGameLogic;
     }
 
-    private void init() {
-        this.setOnTouchListener(mGameLogic);
-    }
-
-    // TODO: Implement
-    public void pause() {
-    }
-
-    public void resume() {
-    }
-
     public void gameOver() {
         mVibrator.vibrate(200);
         log("game over");
-        mGameLogic.setPlaying(false);
 
         // TODO: Make restart after button press.
     }

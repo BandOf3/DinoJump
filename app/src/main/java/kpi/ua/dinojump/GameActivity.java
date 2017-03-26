@@ -44,13 +44,13 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mGameView.pause();
+        mGameLogic.pause();
     }
 
     //running the game when activity is resumed
     @Override
     protected void onResume() {
         super.onResume();
-        mGameView.resume();
+        mGameLogic.resume();
     }
 }

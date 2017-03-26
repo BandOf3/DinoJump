@@ -15,29 +15,31 @@ public class GameRunnable implements Runnable {
     private final Handler mHandler;
     private final int mFps;
 
-    private long mNextFrameMillis;
+    private long mLastFrameMillis = -1;
 
     public GameRunnable(GameLogicContract gameLogicContract, GameViewContract gameViewContract,
                         Handler mHandler, int mFps) {
         this.mGameLogicContract = gameLogicContract;
         this.mGameViewContract = gameViewContract;
         this.mHandler = mHandler;
-        this.mFps = mFps;
+        this.mFps = mFps / 3;
     }
 
     @Override
     public void run() {
         if (mGameLogicContract.isPlaying()) {
-            if (mNextFrameMillis == -1) {
-                mNextFrameMillis = System.currentTimeMillis();
+            if (mLastFrameMillis == -1) {
+                mLastFrameMillis = System.currentTimeMillis();
             }
 
-            mGameLogicContract.update(System.currentTimeMillis() - mNextFrameMillis);
-            mGameViewContract.draw();
+            if (mGameLogicContract.isRunning()) {
+                mGameLogicContract.update(System.currentTimeMillis() - mLastFrameMillis);
+                mGameViewContract.draw();
+            }
             long delta = getFrameDelta(mFps);
-            mNextFrameMillis += delta;
-            Log.d(LOG_TAG, String.format("nextFrame: %d, delta: %d",  mNextFrameMillis, delta));
-            mHandler.postDelayed(this, mNextFrameMillis - System.currentTimeMillis());
+            mLastFrameMillis = System.currentTimeMillis();
+            Log.d(LOG_TAG, String.format("lastFrame: %d, delta: %d",  mLastFrameMillis, delta));
+            mHandler.postDelayed(this, delta);
         }
     }
 

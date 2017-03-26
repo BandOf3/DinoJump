@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +24,6 @@ import kpi.ua.dinojump.view.OnSwipeTouchListener;
 public class GameLogic extends OnSwipeTouchListener implements GameLogicContract {
 
     private double mDistanceRan;
-    private boolean mPlayingIntro;
     private double mHighestScore;
     private long mRunningTime;
     private double mCurrentSpeed;
@@ -31,23 +32,25 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     private boolean mPlaying = true;
     private boolean mStarted;
+    private boolean mPlayingIntro;
     private boolean mGameOver;
 
-    private Dino mDino;
-    private Horizon mHorizon;
-    private ItemDistanceMeter mDistanceMeter;
-
-    private Point mDimensions;
+    private final Dino mDino;
+    private final Horizon mHorizon;
+    private final ItemDistanceMeter mDistanceMeter;
 
     private final GameViewContract mGameContract;
-    private List<BaseEntity> mDrawableEntities;
+    private final List<BaseEntity> mDrawableEntities;
 
     public GameLogic(Context context, GameViewContract gameContract, Point dimensions, int fps) {
         super(context);
         this.mGameContract = gameContract;
-        mDimensions = dimensions;
         mFps = fps;
-        init();
+        mCurrentSpeed = Runner.config.SPEED;
+        mHorizon = new Horizon(dimensions, Runner.config.GAP_COEFFICIENT);
+        mDistanceMeter = new ItemDistanceMeter(Runner.spritePos.TEXT_SPRITE, dimensions.x);
+        mDino = new Dino(Runner.spritePos.TREX);
+        mDrawableEntities = Arrays.asList(mHorizon, mDistanceMeter, mDino);
     }
 
     @Override
@@ -55,7 +58,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         mRunningTime += deltaTime;
         boolean showObstacles = mRunningTime > Runner.config.CLEAR_TIME;
         // First jump triggers the intro.
-        if (mDino.jumpCount == 1 && !mPlayingIntro) {
+        if (mDino.jumpCount == 0 && !mPlayingIntro) {
             startWithIntro();
         }
         // The mHorizon doesn't move until the intro is over.
@@ -67,7 +70,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         // Check for collisions.
         if (showObstacles && checkForCollision(mHorizon.getObstacles().get(0), mDino)) {
             gameOver();
-        } else {
+        } else if (!mPlayingIntro) {
             mDistanceRan += mCurrentSpeed * deltaTime * mFps / 1000L;
             if (mCurrentSpeed < Runner.config.MAX_SPEED) {
                 mCurrentSpeed += Runner.config.ACCELERATION;
@@ -75,7 +78,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         }
         mDistanceMeter.update(deltaTime, Math.ceil(mDistanceRan));
         if (mGameOver) {
-            mPlaying = false;
+            mStarted = false;
         } else {
             mDino.update(deltaTime / 2);
         }
@@ -85,16 +88,9 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         return mDrawableEntities;
     }
 
-    private void init() {
-        mCurrentSpeed = Runner.config.SPEED;
-        mHorizon = new Horizon(mDimensions, Runner.config.GAP_COEFFICIENT);
-        mDistanceMeter = new ItemDistanceMeter(Runner.spritePos.TEXT_SPRITE, mDimensions.x);
-        mDino = new Dino(Runner.spritePos.TREX);
-        mDrawableEntities = Arrays.asList(mHorizon, mDistanceMeter, mDino);
-    }
-
     private void gameOver() {
         mGameOver = true;
+        mStarted = false;
         mDino.update(100, Dino.Status.CRASHED);
         // Update the high score.
         if (mDistanceRan > mHighestScore) {
@@ -113,7 +109,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         if (mIntroFramesPassed > 10) {
             startGame();
         }
-        mHorizon.update((long) 0, this.mCurrentSpeed, false);
+        mHorizon.update(0L, mCurrentSpeed, false);
     }
 
     private void startGame() {
@@ -128,13 +124,12 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             log("startWithIntro");
             mPlayingIntro = true;
             mDino.playingIntro = true;
-            mStarted = true;
         } else if (mGameOver) {
             restart();
         }
     }
 
-    public void restart() {
+    private void restart() {
         log("restart");
         if (!mStarted) {
             mStarted = true;
@@ -176,11 +171,29 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     }
 
     @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (!mStarted) {
+            restart();
+        }
+        return super.onTouch(view, motionEvent);
+    }
+
+    @Override
     public boolean isPlaying() {
         return mPlaying;
     }
 
-    public void setPlaying(boolean playing) {
-        mPlaying = playing;
+    @Override
+    public boolean isRunning() {
+        return mDino.jumpCount == 0 || mStarted;
+    }
+
+    // TODO: Implement
+    public void pause() {
+        mPlaying = false;
+    }
+
+    public void resume() {
+        mPlaying = true;
     }
 }

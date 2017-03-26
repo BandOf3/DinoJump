@@ -158,15 +158,7 @@ public class Obstacle extends BaseEntity {
         return this.xPos + this.width > 0;
     }
 
-    public void update(Object... args) {
-        long deltaTime = 0;
-        double speed = 0;
-        if (args.length > 0) {
-            deltaTime = (long) args[0];
-            if (args.length > 1) {
-                speed = (double) args[1];
-            }
-        }
+    public void update(long deltaTime, double speed) {
         if (!this.remove) {
             if (this.typeConfig.speedOffset > 0) {
                 speed += this.speedOffset;
