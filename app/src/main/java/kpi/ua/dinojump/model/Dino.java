@@ -17,7 +17,6 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 public class Dino extends BaseEntity {
 
     public boolean playingIntro;
-    public int jumpCount;
     private boolean speedDrop;
     private boolean reachedMinHeight;
     private double jumpVelocity;
@@ -28,8 +27,8 @@ public class Dino extends BaseEntity {
     private int x;
     private int y;
     private int xPos, yPos;
-    private boolean ducking = false;
-    private Status status = Status.RUNNING;
+    private boolean ducking;
+    private Status status;
     private int minJumpHeight;
     private Map<Status, AnimFrames> animFrames;
     private int[] currentAnimFrames;
@@ -78,7 +77,6 @@ public class Dino extends BaseEntity {
         this.jumpVelocity = 0;
         this.reachedMinHeight = false;
         this.speedDrop = false;
-        this.jumpCount = 0;
         collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
         init();
     }
@@ -119,13 +117,11 @@ public class Dino extends BaseEntity {
 
     private void updateJump() {
         int framesElapsed = 1;
-        if (this.speedDrop) {
-            this.yPos += Math.round(this.jumpVelocity *
-                    SPEED_DROP_COEFFICIENT * framesElapsed);
-        } else {
-            this.yPos += Math.round(this.jumpVelocity * framesElapsed);
-        }
+        double speedDropCoefficient = framesElapsed * ((this.speedDrop) ? SPEED_DROP_COEFFICIENT : 1);
+
+        this.yPos += Math.round(this.jumpVelocity * speedDropCoefficient);
         this.jumpVelocity += GRAVITY * framesElapsed;
+
         // Minimum height has been reached.
         if (this.yPos < this.minJumpHeight || this.speedDrop) {
             this.reachedMinHeight = true;
@@ -137,7 +133,6 @@ public class Dino extends BaseEntity {
         // Back down at ground level. Jump completed.
         if (this.yPos > this.groundYPos) {
             this.reset();
-            this.jumpCount++;
         }
     }
 
@@ -148,7 +143,6 @@ public class Dino extends BaseEntity {
         this.ducking = false;
         this.update(Status.RUNNING);
         this.speedDrop = false;
-        this.jumpCount = 0;
     }
 
     private void draw(int vx, int vy) {

@@ -31,7 +31,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     private int mIntroFramesPassed;
     private final int mFps;
 
-    private boolean mPlaying = true;
+    private boolean mPlaying;
     private boolean mStarted;
     private boolean mPlayingIntro;
     private boolean mGameOver;
@@ -45,6 +45,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     public GameLogic(Context context, GameViewContract gameContract, Point dimensions, int fps) {
         super(context);
+        this.mPlaying = true;
         this.mGameContract = gameContract;
         mFps = fps;
         mCurrentSpeed = Runner.SPEED;
@@ -59,7 +60,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         mRunningTime += deltaTime;
         boolean showObstacles = mRunningTime > Runner.CLEAR_TIME;
         // First jump triggers the intro.
-        if (mDino.jumpCount == 0 && !mPlayingIntro) {
+        if (!mPlayingIntro) {
             startWithIntro();
         }
         // The mHorizon doesn't move until the intro is over.
@@ -186,7 +187,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     @Override
     public boolean isRunning() {
-        return mDino.jumpCount == 0 || mStarted;
+        return mStarted;
     }
 
     // TODO: Implement
