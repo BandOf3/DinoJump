@@ -1,4 +1,4 @@
-package kpi.ua.dinojump.entities;
+package kpi.ua.dinojump.model;
 
 import android.graphics.Canvas;
 import android.graphics.Point;

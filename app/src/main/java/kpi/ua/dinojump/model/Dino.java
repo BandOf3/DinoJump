@@ -1,4 +1,4 @@
-package kpi.ua.dinojump.entities;
+package kpi.ua.dinojump.model;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -32,7 +32,6 @@ public class Dino extends BaseEntity {
     private int xPos, yPos;
     private boolean ducking = false;
     public Status status = Status.RUNNING;
-    private int timer = 0;
     private int minJumpHeight;
     private Map<Status, AnimFrames> animFrames;
     public int[] currentAnimFrames;
@@ -77,7 +76,6 @@ public class Dino extends BaseEntity {
         // Position when on the ground.
         this.groundYPos = 0;
         this.currentFrame = 0;
-        this.timer = 0;
         this.status = Status.WAITING;
         this.jumping = false;
         this.ducking = false;
@@ -100,10 +98,8 @@ public class Dino extends BaseEntity {
 
     public void update(long deltaTime) {
         if (jumping) updateJump();
-        this.timer += deltaTime;
         this.draw(this.currentAnimFrames[this.currentFrame], 0);
         this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
-        this.timer = 0;
         collisionBox.left = xPos;
         collisionBox.top = yPos;
         collisionBox.right = xPos + ((status == Status.DUCKING) ? config.WIDTH_DUCK : config.WIDTH);
@@ -117,15 +113,13 @@ public class Dino extends BaseEntity {
             this.status = opt_status;
             this.currentFrame = 0;
             int fps = animFrames.get(opt_status).FPS;
-            GameView.SetFPS(fps);
+            //GameView.setFPS(fps);
             this.currentAnimFrames = animFrames.get(opt_status).frames;
         }
         if (jumping) updateJump();
-        this.timer += deltaTime;
         this.draw(this.currentAnimFrames[this.currentFrame], 0);
         this.currentFrame = this.currentFrame ==
                 this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
-        this.timer = 0;
         collisionBox.left = xPos;
         collisionBox.top = yPos;
         collisionBox.right = xPos + ((status == Status.DUCKING) ? config.WIDTH_DUCK : config.WIDTH);

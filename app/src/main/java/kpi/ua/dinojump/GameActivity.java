@@ -1,35 +1,50 @@
 package kpi.ua.dinojump;
 
 
-import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-import kpi.ua.dinojump.entities.BaseEntity;
+
+import kpi.ua.dinojump.core.GameLogic;
+import kpi.ua.dinojump.core.GameRunnable;
+import kpi.ua.dinojump.model.BaseEntity;
 import kpi.ua.dinojump.view.GameView;
+
 import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class GameActivity extends AppCompatActivity {
 
     private GameView mGameView;
+    private GameLogic mGameLogic;
+    private GameRunnable mGameRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(this);
+        setContentView(R.layout.activity_main);
+        init();
     }
 
-    public void init(Context context) {
-        mGameView = new GameView(context);
+    public void init() {
+        mGameView = new GameView(this);
+        setContentView(mGameView);
+
+        mGameLogic = mGameView.getGameLogic();
+        Handler handler = new Handler(Looper.getMainLooper());
+        mGameRunnable = new GameRunnable(mGameLogic, mGameView, handler, 60);
+
         BaseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dino_sprite);
         BaseEntity.Scale = (double) BaseBitmap.getWidth() / BaseEntity.BaseWidth;
-        setContentView(mGameView);
+
+        mGameRunnable.run();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mGameView.Stop();
+        mGameView.pause();
     }
 
     //running the game when activity is resumed

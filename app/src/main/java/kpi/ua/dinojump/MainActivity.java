@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupView() {
-
         mPlayButton = (Button) findViewById(R.id.play_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override

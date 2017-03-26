@@ -1,5 +1,6 @@
-package kpi.ua.dinojump.entities;
+package kpi.ua.dinojump.model;
 
+import android.graphics.Canvas;
 import android.graphics.Rect;
 
 public abstract class BaseEntity {
@@ -8,7 +9,6 @@ public abstract class BaseEntity {
     public static double ScaleTarget = 1;
     public static int startX = 0;
     public static int startY = 0;
-
 
     public static Rect getScaledSource(int l, int t, int w, int h) {
         int rl = (int) (l * Scale);
@@ -32,13 +32,5 @@ public abstract class BaseEntity {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    public static class CollisionBox {
-        public int x, y, width, height;
-        public CollisionBox(int x, int y, int w, int h) {
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
-        }
-    }
+    public abstract void draw(Canvas canvas);
 }
