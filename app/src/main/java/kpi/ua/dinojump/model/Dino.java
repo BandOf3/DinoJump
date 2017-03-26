@@ -17,7 +17,6 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 public class Dino extends BaseEntity {
 
     public boolean playingIntro;
-    public int jumpCount;
     private boolean speedDrop;
     private boolean reachedMinHeight;
     private double jumpVelocity;
@@ -25,12 +24,11 @@ public class Dino extends BaseEntity {
     private int currentFrame;
     private int groundYPos;
     private Rect collisionBox;
-    private Point spritePos;
     private int x;
     private int y;
     private int xPos, yPos;
-    private boolean ducking = false;
-    private Status status = Status.RUNNING;
+    private boolean ducking;
+    private Status status;
     private int minJumpHeight;
     private Map<Status, AnimFrames> animFrames;
     private int[] currentAnimFrames;
@@ -79,7 +77,6 @@ public class Dino extends BaseEntity {
         this.jumpVelocity = 0;
         this.reachedMinHeight = false;
         this.speedDrop = false;
-        this.jumpCount = 0;
         collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
         init();
     }
@@ -93,7 +90,7 @@ public class Dino extends BaseEntity {
         this.update(Status.WAITING);
     }
 
-    public void update(long deltaTime) {
+    private void defaultUpdate() {
         if (jumping) updateJump();
         this.draw(this.currentAnimFrames[this.currentFrame], 0);
         this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
@@ -101,7 +98,9 @@ public class Dino extends BaseEntity {
         collisionBox.top = yPos;
         collisionBox.right = xPos + ((status == Status.DUCKING) ? WIDTH_DUCK : WIDTH);
         collisionBox.bottom = yPos + HEIGHT;
-
+    }
+    public void update() {
+        defaultUpdate();
     }
 
     public void update(Status status) {
@@ -113,26 +112,16 @@ public class Dino extends BaseEntity {
             //GameView.setFPS(fps);
             this.currentAnimFrames = animFrames.get(opt_status).frames;
         }
-        if (jumping) updateJump();
-        this.draw(this.currentAnimFrames[this.currentFrame], 0);
-        this.currentFrame = this.currentFrame ==
-                this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
-        collisionBox.left = xPos;
-        collisionBox.top = yPos;
-        collisionBox.right = xPos + ((status == Status.DUCKING) ? WIDTH_DUCK : WIDTH);
-        collisionBox.bottom = yPos + HEIGHT;
-
+        defaultUpdate();
     }
 
     private void updateJump() {
         int framesElapsed = 1;
-        if (this.speedDrop) {
-            this.yPos += Math.round(this.jumpVelocity *
-                    SPEED_DROP_COEFFICIENT * framesElapsed);
-        } else {
-            this.yPos += Math.round(this.jumpVelocity * framesElapsed);
-        }
+        double speedDropCoefficient = framesElapsed * ((this.speedDrop) ? SPEED_DROP_COEFFICIENT : 1);
+
+        this.yPos += Math.round(this.jumpVelocity * speedDropCoefficient);
         this.jumpVelocity += GRAVITY * framesElapsed;
+
         // Minimum height has been reached.
         if (this.yPos < this.minJumpHeight || this.speedDrop) {
             this.reachedMinHeight = true;
@@ -144,7 +133,6 @@ public class Dino extends BaseEntity {
         // Back down at ground level. Jump completed.
         if (this.yPos > this.groundYPos) {
             this.reset();
-            this.jumpCount++;
         }
     }
 
@@ -155,7 +143,6 @@ public class Dino extends BaseEntity {
         this.ducking = false;
         this.update(Status.RUNNING);
         this.speedDrop = false;
-        this.jumpCount = 0;
     }
 
     private void draw(int vx, int vy) {
@@ -192,8 +179,7 @@ public class Dino extends BaseEntity {
         sourceX += this.spritePos.x;
         sourceY += this.spritePos.y;
         if (this.ducking && this.status != Status.CRASHED) {
-            canvas.drawBitmap(
-                    BaseBitmap,
+            canvas.drawBitmap(BaseBitmap,
                     new Rect(sourceX, sourceY, sourceWidth, sourceHeight),
                     new Rect(xPos, yPos, WIDTH_DUCK, HEIGHT),
                     null);
@@ -204,13 +190,9 @@ public class Dino extends BaseEntity {
             if (this.ducking && this.status == Status.CRASHED) {
                 this.xPos++;
             }
-            Rect sRect = BaseEntity.getScaledSource(sourceX, sourceY, sourceWidth, sourceHeight);
-            Rect tRect = BaseEntity.getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
-            canvas.drawBitmap(
-                    BaseBitmap,
-                    sRect,
-                    tRect,
-                    bitmapPaint);
+            Rect sRect = getScaledSource(sourceX, sourceY, sourceWidth, sourceHeight);
+            Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
+            canvas.drawBitmap(BaseBitmap,sRect,tRect,bitmapPaint);
 
         }
     }

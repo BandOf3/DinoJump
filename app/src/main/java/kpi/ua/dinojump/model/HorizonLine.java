@@ -10,7 +10,6 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class HorizonLine extends BaseEntity {
 
-    private Point spritePos;
     private int[] sourceXPos = new int[2];
     private double[] xPos = new double[2];
     private final int yPos = 127;
@@ -26,7 +25,7 @@ public class HorizonLine extends BaseEntity {
         xPos[1] = WIDTH;
     }
 
-    private void UpdateXPos(int pos, double increment) {
+    private void updateXPos(int pos, double increment) {
         int line1 = pos;
         int line2 = pos == 0 ? 1 : 0;
         xPos[line1] -= increment;
@@ -42,18 +41,18 @@ public class HorizonLine extends BaseEntity {
         int fps = GameView.FPS;
         double increment = speed * fps * deltaTime / 1000;
         if (xPos[0] <= 0) {
-            UpdateXPos(0, increment);
+            updateXPos(0, increment);
         } else {
-            UpdateXPos(1, increment);
+            updateXPos(1, increment);
         }
     }
 
     public void draw(Canvas canvas) {
-        Rect sRect1 = BaseEntity.getScaledSource(sourceXPos[0], spritePos.y, WIDTH, HEIGHT);
-        Rect tRect1 = BaseEntity.getScaledTarget((int) xPos[0], yPos, WIDTH, HEIGHT);
+        Rect sRect1 = getScaledSource(sourceXPos[0], spritePos.y, WIDTH, HEIGHT);
+        Rect tRect1 = getScaledTarget((int) xPos[0], yPos, WIDTH, HEIGHT);
         canvas.drawBitmap(BaseBitmap,sRect1,tRect1,null);
-        Rect sRect2 = BaseEntity.getScaledSource(sourceXPos[1], spritePos.y, WIDTH, HEIGHT);
-        Rect tRect2 = BaseEntity.getScaledTarget((int) xPos[1], yPos, WIDTH, HEIGHT);
+        Rect sRect2 = getScaledSource(sourceXPos[1], spritePos.y, WIDTH, HEIGHT);
+        Rect tRect2 = getScaledTarget((int) xPos[1], yPos, WIDTH, HEIGHT);
         canvas.drawBitmap(BaseBitmap,sRect2,tRect2,null);
     }
 

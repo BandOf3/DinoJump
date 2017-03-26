@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kpi.ua.dinojump.Runner;
-import static kpi.ua.dinojump.model.BaseEntity.*;
 
 
-public class Horizon  extends BaseEntity{
+public class Horizon extends BaseEntity {
 
     private final static double BG_CLOUD_SPEED = 0.2;
     private final static double CLOUD_FREQUENCY = .5;
@@ -55,13 +54,12 @@ public class Horizon  extends BaseEntity{
     }
 
     public void draw(Canvas canvas) {
-        for (Cloud c : clouds) {
-            c.draw(canvas);
+        for (Cloud cloud : clouds) {
+            cloud.draw(canvas);
         }
-
         horizonLine.draw(canvas);
-        for (Obstacle o : obstacles) {
-            o.draw(canvas);
+        for (Obstacle obstacle : obstacles) {
+            obstacle.draw(canvas);
         }
     }
 
@@ -81,9 +79,9 @@ public class Horizon  extends BaseEntity{
             obstacles.remove(delObs);
         if (!this.obstacles.isEmpty()) {
             Obstacle lastObstacle = this.obstacles.get(this.obstacles.size() - 1);
-            if (lastObstacle != null && !lastObstacle.isFollowingObstacleCreated() &&
+            if (lastObstacle != null && !lastObstacle.followingObstacleWasCreated() &&
                     lastObstacle.isVisible() &&
-                    (lastObstacle.getxPos() + lastObstacle.getWidth() + lastObstacle.getGap()) <
+                    (lastObstacle.getXPosition() + lastObstacle.getWidth() + lastObstacle.getGap()) <
                             this.dimensions.x) {
                 this.addNewObstacle(currentSpeed);
                 lastObstacle.setFollowingObstacleCreated(true);
@@ -98,11 +96,10 @@ public class Horizon  extends BaseEntity{
         Obstacle.types.ObstacleTypes obstacleType = Obstacle.types.getObstacleTypes(obstacleTypeIndex);
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
-        if (this.duplicateObstacleCheck(obstacleType.type) ||
-                currentSpeed < obstacleType.minSpeed) {
+        if (this.duplicateObstacleCheck(obstacleType.type) ||currentSpeed < obstacleType.minSpeed) {
             this.addNewObstacle(currentSpeed);
         } else {
-            this.obstacles.add(new Obstacle(Obstacle.types.getObstacleTypes(obstacleTypeIndex), this.dimensions, this.gapCoefficient, currentSpeed));
+            this.obstacles.add(new Obstacle(obstacleType,dimensions,gapCoefficient,currentSpeed));
             this.obstacleHistory.add(obstacleType.type);
             if (this.obstacleHistory.size() > 1) {
                 obstacleHistory.remove(0);
@@ -113,8 +110,7 @@ public class Horizon  extends BaseEntity{
     private boolean duplicateObstacleCheck(int nextObstacleType) {
         int duplicateCount = 0;
         for (int i = 0; i < this.obstacleHistory.size(); i++) {
-            duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ?
-                    duplicateCount + 1 : 0;
+            duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ? duplicateCount + 1 : 0;
         }
         return duplicateCount >= Runner.MAX_OBSTACLE_DUPLICATION;
     }
@@ -123,18 +119,18 @@ public class Horizon  extends BaseEntity{
         double cloudSpeed = this.cloudSpeed / 1000 * deltaTime * speed;
         int numClouds = clouds.size();
         if (numClouds > 0) {
-            for (Cloud c : clouds) {
-                c.update(deltaTime, cloudSpeed);
+            for (Cloud cloud : clouds) {
+                cloud.update(cloudSpeed);
             }
             Cloud lastCloud = clouds.get(numClouds - 1);
             if (numClouds < MAX_CLOUDS &&
-                    (this.dimensions.x - lastCloud.getxPos()) > lastCloud.getCloudGap() &&
+                    (this.dimensions.x - lastCloud.getXPosition()) > lastCloud.getCloudGap() &&
                     this.cloudFrequency > Math.random()) {
                 this.addCloud();
             }
             List<Cloud> newClouds = new ArrayList<>(clouds);
             for (int i = 0; i < newClouds.size(); i++) {
-                if (newClouds.get(i).isRemove()) {
+                if (newClouds.get(i).removeItemFromScreen()) {
                     clouds.remove(i);
                     break;
                 }
