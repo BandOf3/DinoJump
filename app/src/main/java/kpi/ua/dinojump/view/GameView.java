@@ -55,11 +55,11 @@ public class GameView extends SurfaceView implements GameViewContract {
             return;
         }
         try {
-            int w = canvas.getWidth();
-            int h = canvas.getHeight();
-            if (w != mWidth || h != mHeight) {
-                mWidth = w;
-                mHeight = h;
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+            if (canvasWidth != mWidth || canvasHeight != mHeight) {
+                mWidth = canvasWidth;
+                mHeight = canvasHeight;
                 if (mWidth / mHeight >= 4) {
                     BaseEntity.ScaleTarget = (double) mHeight / 150;
                     BaseEntity.startY = 0;

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kpi.ua.dinojump.Runner;
-import kpi.ua.dinojump.view.GameView;
 
 import static kpi.ua.dinojump.Runner.BaseBitmap;
 
@@ -91,7 +90,7 @@ public class Dino extends BaseEntity {
         this.minJumpHeight = this.groundYPos - MIN_JUMP_HEIGHT;
         xPos = 100;
         yPos = 100;
-        this.update(Long.valueOf(1), Status.WAITING);
+        this.update(Status.WAITING);
     }
 
     public void update(long deltaTime) {
@@ -105,7 +104,7 @@ public class Dino extends BaseEntity {
 
     }
 
-    public void update(long deltaTime, Status status) {
+    public void update(Status status) {
         Status opt_status = status;
         if (opt_status != null) {
             this.status = opt_status;
@@ -154,7 +153,7 @@ public class Dino extends BaseEntity {
         this.jumpVelocity = 0;
         this.jumping = false;
         this.ducking = false;
-        this.update((long) 0, Status.RUNNING);
+        this.update(Status.RUNNING);
         this.speedDrop = false;
         this.jumpCount = 0;
     }
@@ -166,7 +165,7 @@ public class Dino extends BaseEntity {
 
     public void startJump(int speed) {
         if (!this.jumping) {
-            this.update((long) 0, Status.JUMPING);
+            this.update(Status.JUMPING);
             // Tweak the jump velocity based on the speed.
             this.jumpVelocity = INITIAL_JUMP_VELOCITY - (speed / 10);
             this.jumping = true;
@@ -205,8 +204,8 @@ public class Dino extends BaseEntity {
             if (this.ducking && this.status == Status.CRASHED) {
                 this.xPos++;
             }
-            Rect sRect = getScaledSource(sourceX, sourceY, sourceWidth, sourceHeight);
-            Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
+            Rect sRect = BaseEntity.getScaledSource(sourceX, sourceY, sourceWidth, sourceHeight);
+            Rect tRect = BaseEntity.getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
             canvas.drawBitmap(
                     BaseBitmap,
                     sRect,
@@ -214,16 +213,6 @@ public class Dino extends BaseEntity {
                     bitmapPaint);
 
         }
-    }
-
-    @Override
-    public double getXPos() {
-        return xPos;
-    }
-
-    @Override
-    public int getYPos() {
-        return yPos;
     }
 
     public Rect getCollisionBox() {

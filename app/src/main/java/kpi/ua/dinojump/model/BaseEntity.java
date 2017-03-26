@@ -34,6 +34,4 @@ public abstract class BaseEntity {
 
     public abstract void draw(Canvas canvas);
 
-    public abstract double getXPos();
-    public abstract int getYPos();
 }

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file:///coding/android/DinoJump/DinoJump.iml" filepath="/coding/android/DinoJump/DinoJump.iml" />
-      <module fileurl="file:///coding/android/DinoJump/app/app.iml" filepath="/coding/android/DinoJump/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DinoJump.iml" filepath="$PROJECT_DIR$/DinoJump.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>

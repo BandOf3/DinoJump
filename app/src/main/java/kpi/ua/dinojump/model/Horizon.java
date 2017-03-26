@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kpi.ua.dinojump.Runner;
+import static kpi.ua.dinojump.model.BaseEntity.*;
 
 
-public class Horizon extends BaseEntity {
+public class Horizon  extends BaseEntity{
 
     private final static double BG_CLOUD_SPEED = 0.2;
     private final static double CLOUD_FREQUENCY = .5;
@@ -64,16 +65,6 @@ public class Horizon extends BaseEntity {
         }
     }
 
-    @Override
-    public double getXPos() {
-        return 0;
-    }
-
-    @Override
-    public int getYPos() {
-        return 0;
-    }
-
     private void updateObstacles(long deltaTime, double currentSpeed) {
         // Obstacles, move to Horizon layer.
         int delObs = -1;
@@ -92,7 +83,7 @@ public class Horizon extends BaseEntity {
             Obstacle lastObstacle = this.obstacles.get(this.obstacles.size() - 1);
             if (lastObstacle != null && !lastObstacle.isFollowingObstacleCreated() &&
                     lastObstacle.isVisible() &&
-                    (lastObstacle.getXPos() + lastObstacle.getWidth() + lastObstacle.getGap()) <
+                    (lastObstacle.getxPos() + lastObstacle.getWidth() + lastObstacle.getGap()) <
                             this.dimensions.x) {
                 this.addNewObstacle(currentSpeed);
                 lastObstacle.setFollowingObstacleCreated(true);
@@ -137,7 +128,7 @@ public class Horizon extends BaseEntity {
             }
             Cloud lastCloud = clouds.get(numClouds - 1);
             if (numClouds < MAX_CLOUDS &&
-                    (this.dimensions.x - lastCloud.getXPos()) > lastCloud.getCloudGap() &&
+                    (this.dimensions.x - lastCloud.getxPos()) > lastCloud.getCloudGap() &&
                     this.cloudFrequency > Math.random()) {
                 this.addCloud();
             }

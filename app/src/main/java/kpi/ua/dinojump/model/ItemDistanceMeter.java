@@ -5,8 +5,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import static kpi.ua.dinojump.Runner.BaseBitmap;
+import static kpi.ua.dinojump.model.BaseEntity.*;
 
-public class ItemDistanceMeter extends BaseEntity {
+
+public class ItemDistanceMeter extends BaseEntity{
 
     private boolean paint;
     private Point spritePos;
@@ -17,7 +19,6 @@ public class ItemDistanceMeter extends BaseEntity {
     private int maxScoreUnits;
     private boolean achievement;
     private String defaultString;
-    private int currentDistance;
     private int flashTimer;
     private int flashIterations;
     private long distance;
@@ -41,7 +42,6 @@ public class ItemDistanceMeter extends BaseEntity {
         this.spritePos = pos;
         this.x = 0;
         this.y = 5;
-        this.currentDistance = 0;
         this.maxScore = 0;
         this.highScore = 0;
         this.achievement = false;
@@ -125,16 +125,6 @@ public class ItemDistanceMeter extends BaseEntity {
             int v = (int) ((highScore / Math.pow(10, i)) % 10);
             this.DrawNum(canvas, this.maxScoreUnits - 1 - i, v, true);
         }
-    }
-
-    @Override
-    public double getXPos() {
-        return x;
-    }
-
-    @Override
-    public int getYPos() {
-        return y;
     }
 
     private void DrawNum(Canvas canvas, int digitPos, int value, boolean opt_highScore) {

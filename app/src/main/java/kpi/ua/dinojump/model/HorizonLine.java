@@ -49,30 +49,12 @@ public class HorizonLine extends BaseEntity {
     }
 
     public void draw(Canvas canvas) {
-        Rect sRect1 = getScaledSource(sourceXPos[0], spritePos.y, WIDTH, HEIGHT);
-        Rect tRect1 = getScaledTarget((int) xPos[0], yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(
-                BaseBitmap,
-                sRect1,
-                tRect1,
-                null);
-        Rect sRect2 = getScaledSource(sourceXPos[1], spritePos.y, WIDTH, HEIGHT);
-        Rect tRect2 = getScaledTarget((int) xPos[1], yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(
-                BaseBitmap,
-                sRect2,
-                tRect2,
-                null);
-    }
-
-    @Override
-    public double getXPos() {
-        return xPos[0];
-    }
-
-    @Override
-    public int getYPos() {
-        return yPos;
+        Rect sRect1 = BaseEntity.getScaledSource(sourceXPos[0], spritePos.y, WIDTH, HEIGHT);
+        Rect tRect1 = BaseEntity.getScaledTarget((int) xPos[0], yPos, WIDTH, HEIGHT);
+        canvas.drawBitmap(BaseBitmap,sRect1,tRect1,null);
+        Rect sRect2 = BaseEntity.getScaledSource(sourceXPos[1], spritePos.y, WIDTH, HEIGHT);
+        Rect tRect2 = BaseEntity.getScaledTarget((int) xPos[1], yPos, WIDTH, HEIGHT);
+        canvas.drawBitmap(BaseBitmap,sRect2,tRect2,null);
     }
 
     public void reset() {

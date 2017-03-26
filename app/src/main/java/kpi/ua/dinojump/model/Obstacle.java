@@ -198,16 +198,6 @@ public class Obstacle extends BaseEntity {
         canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
     }
 
-    @Override
-    public double getXPos() {
-        return xPos;
-    }
-
-    @Override
-    public int getYPos() {
-        return yPos;
-    }
-
     public Rect getDetectCollision() {
         return detectCollision;
     }
@@ -232,5 +222,7 @@ public class Obstacle extends BaseEntity {
         return remove;
     }
 
-
+    public int getxPos() {
+        return xPos;
+    }
 }

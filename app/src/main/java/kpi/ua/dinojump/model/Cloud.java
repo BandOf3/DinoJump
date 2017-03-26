@@ -5,7 +5,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import static kpi.ua.dinojump.Runner.BaseBitmap;
-
+import static kpi.ua.dinojump.model.BaseEntity.*;
 
 public class Cloud extends BaseEntity {
 
@@ -48,21 +48,16 @@ public class Cloud extends BaseEntity {
         }
     }
 
+    public double getxPos() {
+        return xPos;
+    }
+
     public void draw(Canvas canvas) {
         Rect sRect = getScaledSource(spritePos.x, spritePos.y, WIDTH, HEIGHT);
         Rect tRect = getScaledTarget((int) xPos, yPos, WIDTH, HEIGHT);
         canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
     }
 
-    @Override
-    public double getXPos() {
-        return xPos;
-    }
-
-    @Override
-    public int getYPos() {
-        return yPos;
-    }
 
     public double getCloudGap() {
         return cloudGap;
