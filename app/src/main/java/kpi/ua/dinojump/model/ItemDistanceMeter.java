@@ -15,31 +15,27 @@ public class ItemDistanceMeter extends BaseEntity {
     private int maxScore;
     private long highScore;
     private int maxScoreUnits;
-    public boolean achievement;
+    private boolean achievement;
     private String defaultString;
     private int currentDistance;
     private int flashTimer;
     private int flashIterations;
     private long distance;
 
-    public static class config {
-        // Number of digits.
-        public static final int MAX_DISTANCE_UNITS = 5;
-        // Distance that causes achievement animation.
-        public static final int ACHIEVEMENT_DISTANCE = 100;
-        // Used for conversion from pixel distance to a scaled unit.
-        public static final double COEFFICIENT = 0.025;
-        // Flash duration in milliseconds.
-        public static final int FLASH_DURATION = 1000 / 4;
-        // Flash iterations for achievement animation.
-        public static final int FLASH_ITERATIONS = 3;
-    }
+    // Number of digits.
+    private static final int MAX_DISTANCE_UNITS = 5;
+    // Distance that causes achievement animation.
+    private static final int ACHIEVEMENT_DISTANCE = 100;
+    // Used for conversion from pixel distance to a scaled unit.
+    private static final double COEFFICIENT = 0.025;
+    // Flash duration in milliseconds.
+    private static final int FLASH_DURATION = 1000 / 4;
+    // Flash iterations for achievement animation.
+    private static final int FLASH_ITERATIONS = 3;
 
-    public static final class dimensions {
-        public static final int WIDTH = 10;
-        public static final int HEIGHT = 13;
-        public static final int DEST_WIDTH = 11;
-    }
+    private static final int WIDTH = 10;
+    private static final int HEIGHT = 13;
+    private static final int DEST_WIDTH = 11;
 
     public ItemDistanceMeter(Point pos, int w) {
         this.spritePos = pos;
@@ -52,7 +48,7 @@ public class ItemDistanceMeter extends BaseEntity {
         this.defaultString = "";
         this.flashTimer = 0;
         this.flashIterations = 0;
-        this.maxScoreUnits = config.MAX_DISTANCE_UNITS;
+        this.maxScoreUnits = MAX_DISTANCE_UNITS;
         this.init(w);
     }
 
@@ -68,7 +64,7 @@ public class ItemDistanceMeter extends BaseEntity {
     }
 
     private void calcXPos(int canvasWidth) {
-        this.x = canvasWidth - (dimensions.DEST_WIDTH *
+        this.x = canvasWidth - (DEST_WIDTH *
                 (this.maxScoreUnits + 1));
     }
 
@@ -82,26 +78,26 @@ public class ItemDistanceMeter extends BaseEntity {
             distance = this.getActualDistance(distance);
             // Score has gone beyond the initial digit count.
             if (distance > this.maxScore && this.maxScoreUnits ==
-                    config.MAX_DISTANCE_UNITS) {
+                    MAX_DISTANCE_UNITS) {
                 this.maxScoreUnits++;
             } else {
                 this.distance = 0;
             }
             if (distance > 0) {
                 this.distance = (long) distance;
-                if (distance % config.ACHIEVEMENT_DISTANCE == 0) {
+                if (distance % ACHIEVEMENT_DISTANCE == 0) {
                     this.achievement = true;
                     this.flashTimer = 0;
                 }
             }
         } else {
             // Control flashing of the score on reaching acheivement.
-            if (this.flashIterations <= config.FLASH_ITERATIONS) {
+            if (this.flashIterations <= FLASH_ITERATIONS) {
                 this.flashTimer += deltaTime;
-                if (this.flashTimer < config.FLASH_DURATION) {
+                if (this.flashTimer < FLASH_DURATION) {
                     paint = false;
                 } else if (this.flashTimer >
-                        config.FLASH_DURATION * 2) {
+                        FLASH_DURATION * 2) {
                     this.flashTimer = 0;
                     this.flashIterations++;
                     paint = true;
@@ -131,24 +127,34 @@ public class ItemDistanceMeter extends BaseEntity {
         }
     }
 
+    @Override
+    public double getXPos() {
+        return x;
+    }
+
+    @Override
+    public int getYPos() {
+        return y;
+    }
+
     private void DrawNum(Canvas canvas, int digitPos, int value, boolean opt_highScore) {
         int deltaX = x;
         if (opt_highScore) {
-            deltaX = this.x - (this.maxScoreUnits * 2) * dimensions.WIDTH;
+            deltaX = this.x - (this.maxScoreUnits * 2) * WIDTH;
         }
-        Rect sRect = getScaledSource(dimensions.WIDTH * value + spritePos.x,
-                                     spritePos.y,
-                                     dimensions.WIDTH,
-                                     dimensions.HEIGHT);
-        Rect tRect = getScaledTarget(dimensions.DEST_WIDTH * digitPos + deltaX,
-                                     y + y,
-                                     dimensions.WIDTH,
-                                     dimensions.HEIGHT);
+        Rect sRect = getScaledSource(WIDTH * value + spritePos.x,
+                spritePos.y,
+                WIDTH,
+                HEIGHT);
+        Rect tRect = getScaledTarget(DEST_WIDTH * digitPos + deltaX,
+                y + y,
+                WIDTH,
+                HEIGHT);
         canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
     }
 
     private long getActualDistance(double distance) {
-        return distance > 0 ? Math.round(distance * config.COEFFICIENT) : 0;
+        return distance > 0 ? Math.round(distance * COEFFICIENT) : 0;
     }
 
     public void setHighScore(double highest) {

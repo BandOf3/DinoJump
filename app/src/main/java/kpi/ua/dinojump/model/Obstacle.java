@@ -11,21 +11,21 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class Obstacle extends BaseEntity {
 
-    public final static double MAX_GAP_COEFFICIENT = 1.5;
-    public final static int MAX_OBSTACLE_LENGTH = 3;
+    private final static double MAX_GAP_COEFFICIENT = 1.5;
+    private final static int MAX_OBSTACLE_LENGTH = 3;
     private Point spritePos;
     private Point dimensions;
     private double gapCoefficient;
     private types.ObstacleTypes typeConfig;
 
     private int size;
-    public boolean remove;
-    public int xPos, yPos, width;
-    public int gap;
+    private boolean remove;
+    private int xPos, yPos, width;
+    private int gap;
     private double speedOffset;
     private int currentFrame;
     private long timer;
-    public boolean followingObstacleCreated;
+    private boolean followingObstacleCreated;
     private Rect detectCollision;
 
 
@@ -53,18 +53,18 @@ public class Obstacle extends BaseEntity {
                 case 1:
                     ret = new CACTUS_LARGE();
                     ret.type = 1;
-                    ret.spritePos = Runner.spritePos.CACTUS_LARGE;
+                    ret.spritePos = Runner.CACTUS_LARGE;
                     break;
                 case 2:
                     ret = new PTERODACTYL();
                     ret.type = 2;
-                    ret.spritePos = Runner.spritePos.PTERODACTYL;
+                    ret.spritePos = Runner.PTERODACTYL;
                     break;
                 case 0:
                 default:
                     ret = new CACTUS_SMALL();
                     ret.type = 0;
-                    ret.spritePos = Runner.spritePos.CACTUS_SMALL;
+                    ret.spritePos = Runner.CACTUS_SMALL;
                     break;
             }
             return ret;
@@ -126,7 +126,7 @@ public class Obstacle extends BaseEntity {
         detectCollision = new Rect(xPos, yPos, typeConfig.width, typeConfig.height);
     }
 
-    public void init(double speed) {
+    private void init(double speed) {
         // Only allow sizing if we're at the right speed.
         if (this.size > 1 && this.typeConfig.multipleSpeed > speed) {
             this.size = 1;
@@ -134,7 +134,7 @@ public class Obstacle extends BaseEntity {
         this.width = this.typeConfig.width * this.size;
         this.xPos = this.dimensions.x - this.width;
         // Check if obstacle can be positioned at various heights.
-        if (this.typeConfig.yPos.length > 1)  {
+        if (this.typeConfig.yPos.length > 1) {
             this.yPos = this.typeConfig.yPos[((int) getRandomNum(0, this.typeConfig.yPos.length - 1))];
         } else {
             this.yPos = this.typeConfig.yPos[0];
@@ -148,7 +148,7 @@ public class Obstacle extends BaseEntity {
         this.gap = (int) this.getGap(this.gapCoefficient, speed);
     }
 
-    public double getGap(double gapCoefficient, double speed) {
+    private double getGap(double gapCoefficient, double speed) {
         int minGap = (int) Math.round(this.width * speed + this.typeConfig.minGap * gapCoefficient);
         int maxGap = (int) Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
         return getRandomNum(minGap, maxGap);
@@ -198,7 +198,39 @@ public class Obstacle extends BaseEntity {
         canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
     }
 
+    @Override
+    public double getXPos() {
+        return xPos;
+    }
+
+    @Override
+    public int getYPos() {
+        return yPos;
+    }
+
     public Rect getDetectCollision() {
         return detectCollision;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getGap() {
+        return gap;
+    }
+
+    public boolean isFollowingObstacleCreated() {
+        return followingObstacleCreated;
+    }
+
+    public void setFollowingObstacleCreated(boolean followingObstacleCreated) {
+        this.followingObstacleCreated = followingObstacleCreated;
+    }
+
+    public boolean isRemove() {
+        return remove;
+    }
+
+
 }

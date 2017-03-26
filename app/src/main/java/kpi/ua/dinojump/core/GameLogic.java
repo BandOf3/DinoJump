@@ -16,6 +16,7 @@ import kpi.ua.dinojump.model.Dino;
 import kpi.ua.dinojump.model.Horizon;
 import kpi.ua.dinojump.model.ItemDistanceMeter;
 import kpi.ua.dinojump.model.Obstacle;
+import kpi.ua.dinojump.view.GameViewContract;
 import kpi.ua.dinojump.view.OnSwipeTouchListener;
 
 /**
@@ -46,17 +47,17 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         super(context);
         this.mGameContract = gameContract;
         mFps = fps;
-        mCurrentSpeed = Runner.config.SPEED;
-        mHorizon = new Horizon(dimensions, Runner.config.GAP_COEFFICIENT);
-        mDistanceMeter = new ItemDistanceMeter(Runner.spritePos.TEXT_SPRITE, dimensions.x);
-        mDino = new Dino(Runner.spritePos.TREX);
+        mCurrentSpeed = Runner.SPEED;
+        mHorizon = new Horizon(dimensions, Runner.GAP_COEFFICIENT);
+        mDistanceMeter = new ItemDistanceMeter(Runner.TEXT_SPRITE, dimensions.x);
+        mDino = new Dino(Runner.TREX);
         mDrawableEntities = Arrays.asList(mHorizon, mDistanceMeter, mDino);
     }
 
     @Override
     public void update(long deltaTime) {
         mRunningTime += deltaTime;
-        boolean showObstacles = mRunningTime > Runner.config.CLEAR_TIME;
+        boolean showObstacles = mRunningTime > Runner.CLEAR_TIME;
         // First jump triggers the intro.
         if (mDino.jumpCount == 0 && !mPlayingIntro) {
             startWithIntro();
@@ -72,8 +73,8 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             gameOver();
         } else if (!mPlayingIntro) {
             mDistanceRan += mCurrentSpeed * deltaTime * mFps / 1000L;
-            if (mCurrentSpeed < Runner.config.MAX_SPEED) {
-                mCurrentSpeed += Runner.config.ACCELERATION;
+            if (mCurrentSpeed < Runner.MAX_SPEED) {
+                mCurrentSpeed += Runner.ACCELERATION;
             }
         }
         mDistanceMeter.update(deltaTime, Math.ceil(mDistanceRan));
@@ -136,7 +137,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             mRunningTime = 0;
             mGameOver = false;
             mDistanceRan = 0;
-            setSpeed(Runner.config.SPEED);
+            setSpeed(Runner.SPEED);
             mDistanceMeter.reset();
             mHorizon.reset();
             mDino.reset();

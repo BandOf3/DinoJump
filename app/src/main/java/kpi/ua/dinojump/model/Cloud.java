@@ -9,21 +9,19 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class Cloud extends BaseEntity {
 
-    private static class config {
-        public static int HEIGHT = 14;
-        public static int MAX_CLOUD_GAP = 400;
-        public static int MAX_SKY_LEVEL = 30;
-        public static int MIN_CLOUD_GAP = 100;
-        public static int MIN_SKY_LEVEL = 71;
-        public static int WIDTH = 46;
-    }
+    private final static int HEIGHT = 14;
+    private final static int MAX_CLOUD_GAP = 400;
+    private final static int MAX_SKY_LEVEL = 30;
+    private final static int MIN_CLOUD_GAP = 100;
+    private final static int MIN_SKY_LEVEL = 71;
+    private final static int WIDTH = 46;
 
     private Point spritePos;
     private int containerWidth;
-    public double xPos;
-    public int yPos;
-    public boolean remove;
-    public double cloudGap;
+    private double xPos;
+    private int yPos;
+    private boolean remove;
+    private double cloudGap;
 
     public Cloud(Point sprite, int w) {
         this.spritePos = sprite;
@@ -31,14 +29,14 @@ public class Cloud extends BaseEntity {
         this.xPos = containerWidth;
         this.yPos = 0;
         this.remove = false;
-        this.cloudGap = getRandomNum(config.MIN_CLOUD_GAP,
-                config.MAX_CLOUD_GAP);
+        this.cloudGap = getRandomNum(MIN_CLOUD_GAP,
+                MAX_CLOUD_GAP);
         this.init();
     }
 
     private void init() {
-        this.yPos = (int) getRandomNum(config.MAX_SKY_LEVEL,
-                config.MIN_SKY_LEVEL);
+        this.yPos = (int) getRandomNum(MAX_SKY_LEVEL,
+                MIN_SKY_LEVEL);
     }
 
     public void update(long deltaTime, double speed) {
@@ -51,14 +49,30 @@ public class Cloud extends BaseEntity {
     }
 
     public void draw(Canvas canvas) {
-        int sourceWidth = config.WIDTH;
-        int sourceHeight = config.HEIGHT;
-        Rect sRect = getScaledSource(spritePos.x, spritePos.y, sourceWidth, sourceHeight);
-        Rect tRect = getScaledTarget((int) xPos, yPos, config.WIDTH, config.HEIGHT);
+        Rect sRect = getScaledSource(spritePos.x, spritePos.y, WIDTH, HEIGHT);
+        Rect tRect = getScaledTarget((int) xPos, yPos, WIDTH, HEIGHT);
         canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
     }
 
+    @Override
+    public double getXPos() {
+        return xPos;
+    }
+
+    @Override
+    public int getYPos() {
+        return yPos;
+    }
+
+    public double getCloudGap() {
+        return cloudGap;
+    }
+
+    public boolean isRemove() {
+        return remove;
+    }
+
     private boolean isVisible() {
-        return this.xPos + config.WIDTH > 0;
+        return this.xPos + WIDTH > 0;
     }
 }

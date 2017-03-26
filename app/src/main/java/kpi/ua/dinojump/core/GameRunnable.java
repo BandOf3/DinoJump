@@ -3,6 +3,8 @@ package kpi.ua.dinojump.core;
 import android.os.Handler;
 import android.util.Log;
 
+import kpi.ua.dinojump.view.GameViewContract;
+
 /**
  * Manages scheduling logic of the GameActivity.
  */

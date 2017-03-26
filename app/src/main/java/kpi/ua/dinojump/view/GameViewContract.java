@@ -1,4 +1,4 @@
-package kpi.ua.dinojump.core;
+package kpi.ua.dinojump.view;
 
 public interface GameViewContract {
     void draw();

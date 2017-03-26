@@ -10,7 +10,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import kpi.ua.dinojump.core.GameLogic;
-import kpi.ua.dinojump.core.GameViewContract;
 import kpi.ua.dinojump.model.BaseEntity;
 
 
