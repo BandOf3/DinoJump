@@ -1,4 +1,4 @@
-package kpi.ua.dinojump.entities;
+package kpi.ua.dinojump.model;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kpi.ua.dinojump.Runner;
-import kpi.ua.dinojump.view.GameView;
 
 import static kpi.ua.dinojump.Runner.BaseBitmap;
 
@@ -31,11 +30,10 @@ public class Dino extends BaseEntity {
     private int y;
     private int xPos, yPos;
     private boolean ducking = false;
-    public Status status = Status.RUNNING;
-    private int timer = 0;
+    private Status status = Status.RUNNING;
     private int minJumpHeight;
     private Map<Status, AnimFrames> animFrames;
-    public int[] currentAnimFrames;
+    private int[] currentAnimFrames;
 
     public class AnimFrames {
         public int[] frames;
@@ -47,17 +45,15 @@ public class Dino extends BaseEntity {
         }
     }
 
-    public static class config {
-        public static int DROP_VELOCITY = -5;
-        public static double GRAVITY = 0.6;
-        public static int HEIGHT = 47;
-        public static int INITIAL_JUMP_VELOCITY = -10;
-        public static int MAX_JUMP_HEIGHT = 30;
-        public static int MIN_JUMP_HEIGHT = 30;
-        public static int SPEED_DROP_COEFFICIENT = 3;
-        public static int WIDTH = 44;
-        public static int WIDTH_DUCK = 59;
-    }
+    private static int DROP_VELOCITY = -5;
+    private static double GRAVITY = 0.6;
+    private static int HEIGHT = 47;
+    private static int INITIAL_JUMP_VELOCITY = -10;
+    private static int MAX_JUMP_HEIGHT = 30;
+    private static int MIN_JUMP_HEIGHT = 30;
+    private static int SPEED_DROP_COEFFICIENT = 3;
+    private static int WIDTH = 44;
+    private static int WIDTH_DUCK = 59;
 
 
     public enum Status {
@@ -77,7 +73,6 @@ public class Dino extends BaseEntity {
         // Position when on the ground.
         this.groundYPos = 0;
         this.currentFrame = 0;
-        this.timer = 0;
         this.status = Status.WAITING;
         this.jumping = false;
         this.ducking = false;
@@ -85,51 +80,47 @@ public class Dino extends BaseEntity {
         this.reachedMinHeight = false;
         this.speedDrop = false;
         this.jumpCount = 0;
-        collisionBox =  new Rect(xPos, yPos, config.WIDTH, config.HEIGHT);
+        collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
         init();
     }
 
     private void init() {
-        this.groundYPos = Runner.defaultDimensions.HEIGHT - config.HEIGHT - Runner.config.BOTTOM_PAD;
+        this.groundYPos = Runner.HEIGHT - HEIGHT - Runner.BOTTOM_PAD;
         this.yPos = this.groundYPos;
-        this.minJumpHeight = this.groundYPos - config.MIN_JUMP_HEIGHT;
+        this.minJumpHeight = this.groundYPos - MIN_JUMP_HEIGHT;
         xPos = 100;
         yPos = 100;
-        this.update(Long.valueOf(1), Status.WAITING);
+        this.update(Status.WAITING);
     }
 
     public void update(long deltaTime) {
         if (jumping) updateJump();
-        this.timer += deltaTime;
         this.draw(this.currentAnimFrames[this.currentFrame], 0);
         this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
-        this.timer = 0;
         collisionBox.left = xPos;
         collisionBox.top = yPos;
-        collisionBox.right = xPos + ((status == Status.DUCKING) ? config.WIDTH_DUCK : config.WIDTH);
-        collisionBox.bottom = yPos + config.HEIGHT;
+        collisionBox.right = xPos + ((status == Status.DUCKING) ? WIDTH_DUCK : WIDTH);
+        collisionBox.bottom = yPos + HEIGHT;
 
     }
 
-    public void update(long deltaTime, Status status) {
+    public void update(Status status) {
         Status opt_status = status;
         if (opt_status != null) {
             this.status = opt_status;
             this.currentFrame = 0;
             int fps = animFrames.get(opt_status).FPS;
-            GameView.SetFPS(fps);
+            //GameView.setFPS(fps);
             this.currentAnimFrames = animFrames.get(opt_status).frames;
         }
         if (jumping) updateJump();
-        this.timer += deltaTime;
         this.draw(this.currentAnimFrames[this.currentFrame], 0);
         this.currentFrame = this.currentFrame ==
                 this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
-        this.timer = 0;
         collisionBox.left = xPos;
         collisionBox.top = yPos;
-        collisionBox.right = xPos + ((status == Status.DUCKING) ? config.WIDTH_DUCK : config.WIDTH);
-        collisionBox.bottom = yPos + config.HEIGHT;
+        collisionBox.right = xPos + ((status == Status.DUCKING) ? WIDTH_DUCK : WIDTH);
+        collisionBox.bottom = yPos + HEIGHT;
 
     }
 
@@ -137,17 +128,17 @@ public class Dino extends BaseEntity {
         int framesElapsed = 1;
         if (this.speedDrop) {
             this.yPos += Math.round(this.jumpVelocity *
-                    config.SPEED_DROP_COEFFICIENT * framesElapsed);
+                    SPEED_DROP_COEFFICIENT * framesElapsed);
         } else {
             this.yPos += Math.round(this.jumpVelocity * framesElapsed);
         }
-        this.jumpVelocity += config.GRAVITY * framesElapsed;
+        this.jumpVelocity += GRAVITY * framesElapsed;
         // Minimum height has been reached.
         if (this.yPos < this.minJumpHeight || this.speedDrop) {
             this.reachedMinHeight = true;
         }
         // Reached max height
-        if (this.yPos < config.MAX_JUMP_HEIGHT || this.speedDrop) {
+        if (this.yPos < MAX_JUMP_HEIGHT || this.speedDrop) {
             this.endJump();
         }
         // Back down at ground level. Jump completed.
@@ -162,7 +153,7 @@ public class Dino extends BaseEntity {
         this.jumpVelocity = 0;
         this.jumping = false;
         this.ducking = false;
-        this.update((long) 0, Status.RUNNING);
+        this.update(Status.RUNNING);
         this.speedDrop = false;
         this.jumpCount = 0;
     }
@@ -174,9 +165,9 @@ public class Dino extends BaseEntity {
 
     public void startJump(int speed) {
         if (!this.jumping) {
-            this.update((long) 0, Status.JUMPING);
+            this.update(Status.JUMPING);
             // Tweak the jump velocity based on the speed.
-            this.jumpVelocity = config.INITIAL_JUMP_VELOCITY - (speed / 10);
+            this.jumpVelocity = INITIAL_JUMP_VELOCITY - (speed / 10);
             this.jumping = true;
             this.reachedMinHeight = false;
             this.speedDrop = false;
@@ -185,8 +176,8 @@ public class Dino extends BaseEntity {
 
     public void endJump() {
         if (this.reachedMinHeight &&
-                this.jumpVelocity < config.DROP_VELOCITY) {
-            this.jumpVelocity = config.DROP_VELOCITY;
+                this.jumpVelocity < DROP_VELOCITY) {
+            this.jumpVelocity = DROP_VELOCITY;
         }
     }
 
@@ -195,8 +186,8 @@ public class Dino extends BaseEntity {
         int sourceX = x;
         int sourceY = y;
         int sourceWidth = this.ducking && this.status != Status.CRASHED ?
-                config.WIDTH_DUCK : config.WIDTH;
-        int sourceHeight = config.HEIGHT;
+                WIDTH_DUCK : WIDTH;
+        int sourceHeight = HEIGHT;
         // Adjustments for sprite sheet position.
         sourceX += this.spritePos.x;
         sourceY += this.spritePos.y;
@@ -204,7 +195,7 @@ public class Dino extends BaseEntity {
             canvas.drawBitmap(
                     BaseBitmap,
                     new Rect(sourceX, sourceY, sourceWidth, sourceHeight),
-                    new Rect(xPos, yPos, config.WIDTH_DUCK, config.HEIGHT),
+                    new Rect(xPos, yPos, WIDTH_DUCK, HEIGHT),
                     null);
         } else {
             Paint p = new Paint();
@@ -213,8 +204,8 @@ public class Dino extends BaseEntity {
             if (this.ducking && this.status == Status.CRASHED) {
                 this.xPos++;
             }
-            Rect sRect = getScaledSource(sourceX, sourceY, sourceWidth, sourceHeight);
-            Rect tRect = getScaledTarget(xPos, yPos, config.WIDTH, config.HEIGHT);
+            Rect sRect = BaseEntity.getScaledSource(sourceX, sourceY, sourceWidth, sourceHeight);
+            Rect tRect = BaseEntity.getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
             canvas.drawBitmap(
                     BaseBitmap,
                     sRect,
