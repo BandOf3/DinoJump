@@ -172,7 +172,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     @Override
     public void onSwipeBottom() {
-        mDino.update(Dino.DinoState.DUCKING);
+        mDino.tryDuck();
     }
 
     @Override

@@ -23,6 +23,7 @@ public class Dino extends BaseEntity {
     private static int HEIGHT = 47;
     private static int INITIAL_JUMP_VELOCITY = -18;
 
+    // TODO: Make it dependent on the length of press.
     private static int JUMP_HEIGHT = 40;
     private static int WIDTH = 44;
     private static int WIDTH_DUCK = 59;
@@ -136,6 +137,12 @@ public class Dino extends BaseEntity {
     public void tryJump(int speed) {
         if (!isJumping()) {
             startJump(speed);
+        }
+    }
+
+    public void tryDuck() {
+        if (currStatus == DinoState.RUNNING) {
+            update(DinoState.DUCKING);
         }
     }
 
