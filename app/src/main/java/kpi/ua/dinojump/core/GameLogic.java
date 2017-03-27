@@ -33,6 +33,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     private boolean mPlaying;
     private boolean mStarted;
+    private boolean mBeginning = true;
     private boolean mPlayingIntro;
     private boolean mGameOver;
 
@@ -57,6 +58,9 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
 
     @Override
     public void update(long deltaTime) {
+        if (!mStarted) {
+            return;
+        }
         mRunningTime += deltaTime;
         boolean showObstacles = mRunningTime > Runner.CLEAR_TIME;
         // First jump triggers the intro.
@@ -134,6 +138,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     private void restart() {
         log("restart");
         if (!mStarted) {
+            mBeginning = false;
             mStarted = true;
             mRunningTime = 0;
             mGameOver = false;
@@ -186,6 +191,11 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     @Override
     public boolean isRunning() {
         return mStarted;
+    }
+
+    @Override
+    public boolean isBeginning() {
+        return mBeginning;
     }
 
     // TODO: Implement

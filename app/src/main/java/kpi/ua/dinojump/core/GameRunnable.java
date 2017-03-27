@@ -34,7 +34,7 @@ public class GameRunnable implements Runnable {
                 mLastFrameMillis = System.currentTimeMillis();
             }
 
-            if (mGameLogicContract.isRunning()) {
+            if (mGameLogicContract.isBeginning() || mGameLogicContract.isRunning()) {
                 mGameLogicContract.update(System.currentTimeMillis() - mLastFrameMillis);
                 mGameViewContract.draw();
             }

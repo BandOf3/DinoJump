@@ -6,4 +6,6 @@ public interface GameLogicContract {
     boolean isPlaying();
 
     boolean isRunning();
+
+    boolean isBeginning();
 }
