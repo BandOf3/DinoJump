@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,53 +17,55 @@ import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class Dino extends BaseEntity {
 
-    private static int DROP_VELOCITY = -5;
-    private static double GRAVITY = 0.6;
+    private static int DROP_VELOCITY = 4;
+    private static double UP_GRAVITY = 0.6;
+    private static double DOWN_GRAVITY = 1.8;
     private static int HEIGHT = 47;
-    private static int INITIAL_JUMP_VELOCITY = -10;
-    private static int MAX_JUMP_HEIGHT = 30;
-    private static int MIN_JUMP_HEIGHT = 30;
-    private static int SPEED_DROP_COEFFICIENT = 3;
+    private static int INITIAL_JUMP_VELOCITY = -18;
+
+    private static int JUMP_HEIGHT = 40;
     private static int WIDTH = 44;
     private static int WIDTH_DUCK = 59;
 
     //Possible dino states
-    public enum DinoState {CRASHED, DUCKING, JUMPING, RUNNING, WAITING}
+    public enum DinoState {
+        CRASHED, DUCKING, JUMPING, RUNNING, WAITING
+    }
+
+    private DinoState preCrashState = null;
+
     private double jumpVelocity;
-    public boolean jumping, ducking, playingIntro , speedDrop, reachedMinHeight;
+    private boolean playingIntro;
+    private boolean goingDown;
+
     private int groundYPos;
     private Rect collisionBox;
     private int xPos, yPos, animFrameX, animFrameY, currentFrame;
     private DinoState currStatus;
-    private int minJumpHeight;
     private Map<DinoState, AnimFrames> animFrames;
     private int[] currentAnimFrames;
 
     public Dino(Point s) {
-        this.spritePos = s;
-        this.xPos = 0;
-        this.yPos = 0;
+        spritePos = s;
+        xPos = 0;
+        yPos = 0;
         // Position when on the ground.
-        this.groundYPos = 0;
-        this.currentFrame = 0;
-        this.currStatus = DinoState.WAITING;
-        this.jumping = false;
-        this.ducking = false;
-        this.jumpVelocity = 0;
-        this.reachedMinHeight = false;
-        this.speedDrop = false;
+        groundYPos = 0;
+        currentFrame = 0;
+        currStatus = DinoState.WAITING;
+        jumpVelocity = 0;
+        goingDown = false;
         init();
     }
 
     private void init() {
         initAnimationFrames();
         collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
-        this.groundYPos = Runner.HEIGHT - HEIGHT - Runner.BOTTOM_PAD;
-        this.yPos = this.groundYPos;
-        this.minJumpHeight = this.groundYPos - MIN_JUMP_HEIGHT;
+        groundYPos = Runner.HEIGHT - HEIGHT - Runner.BOTTOM_PAD;
+        yPos = groundYPos;
         xPos = 100;
         yPos = 100;
-        this.update(DinoState.WAITING);
+        update(DinoState.WAITING);
     }
 
     private void initAnimationFrames() {
@@ -75,56 +78,54 @@ public class Dino extends BaseEntity {
     }
 
     private void defaultUpdate() {
-        if (jumping) updateJump();
-        this.draw(this.currentAnimFrames[this.currentFrame], 0);
-        this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
+        if (isJumping()) {
+            updateJump();
+        }
+        draw(currentAnimFrames[currentFrame], 0);
+        currentFrame = currentFrame == currentAnimFrames.length - 1 ? 0 : currentFrame + 1;
         collisionBox.left = xPos;
         collisionBox.top = yPos;
-        collisionBox.right = xPos + ((currStatus == DinoState.DUCKING) ? WIDTH_DUCK : WIDTH);
+        collisionBox.right = xPos + (isDucking() ? WIDTH_DUCK : WIDTH);
         collisionBox.bottom = yPos + HEIGHT;
     }
+
     public void update() {
         defaultUpdate();
     }
 
     public void update(DinoState status) {
-        DinoState opt_status = status;
-        if (opt_status != null) {
-            this.currStatus = opt_status;
-            this.currentFrame = 0;
-            this.currentAnimFrames = animFrames.get(opt_status).frames;
+        if (status != null) {
+            if (status == DinoState.CRASHED) {
+                preCrashState = currStatus;
+            }
+            currStatus = status;
+            currentFrame = 0;
+            currentAnimFrames = animFrames.get(status).frames;
         }
         defaultUpdate();
     }
 
     private void updateJump() {
         int framesElapsed = 1;
-        double speedDropCoefficient = framesElapsed * ((this.speedDrop) ? SPEED_DROP_COEFFICIENT : 1);
 
-        this.yPos += Math.round(this.jumpVelocity * speedDropCoefficient);
-        this.jumpVelocity += GRAVITY * framesElapsed;
+        yPos += Math.round(jumpVelocity/* * speedDropCoefficient*/);
+        jumpVelocity += (goingDown ? DOWN_GRAVITY : UP_GRAVITY) * framesElapsed;
 
-        // Minimum height has been reached.
-        if (this.yPos < this.minJumpHeight || this.speedDrop) {
-            this.reachedMinHeight = true;
-        }
         // Reached max height
-        if (this.yPos < MAX_JUMP_HEIGHT || this.speedDrop) {
-            this.endJump();
+        if (yPos < JUMP_HEIGHT) {
+            startDescending();
         }
         // Back down at ground level. Jump completed.
-        if (this.yPos > this.groundYPos) {
-            this.reset();
+        if (yPos > groundYPos) {
+            reset();
         }
     }
 
     public void reset() {
-        this.yPos = this.groundYPos;
-        this.jumpVelocity = 0;
-        this.jumping = false;
-        this.ducking = false;
-        this.update(DinoState.RUNNING);
-        this.speedDrop = false;
+        yPos = groundYPos;
+        jumpVelocity = 0;
+        update(DinoState.RUNNING);
+        goingDown = false;
     }
 
     private void draw(int vx, int vy) {
@@ -132,66 +133,69 @@ public class Dino extends BaseEntity {
         animFrameY = vy;
     }
 
-    public void startJump(int speed) {
-        if (!this.jumping) {
-            this.update(DinoState.JUMPING);
+    public void tryJump(int speed) {
+        if (!isJumping()) {
+            startJump(speed);
+        }
+    }
+
+    private void startJump(int speed) {
+        if (!isJumping()) {
+            update(DinoState.JUMPING);
             // Tweak the jump velocity based on the speed.
-            this.jumpVelocity = INITIAL_JUMP_VELOCITY - (speed / 10);
-            this.jumping = true;
-            this.reachedMinHeight = false;
-            this.speedDrop = false;
+            jumpVelocity = INITIAL_JUMP_VELOCITY - (speed / 10);
+            goingDown = false;
         }
     }
 
-    public void endJump() {
-        if (this.reachedMinHeight &&
-                this.jumpVelocity < DROP_VELOCITY) {
-            this.jumpVelocity = DROP_VELOCITY;
-        }
-    }
-
-    private boolean isValidDuckingState() {
-        return this.ducking && this.currStatus != DinoState.CRASHED;
+    private void startDescending() {
+        goingDown = true;
+        jumpVelocity = DROP_VELOCITY;
     }
 
     public void draw(Canvas canvas) {
         Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
         int animFrameX = this.animFrameX;
         int animFrameY = this.animFrameY;
-        int sourceWidth = isValidDuckingState() ? WIDTH_DUCK : WIDTH;
+        int sourceWidth = isDucking() ? WIDTH_DUCK : WIDTH;
         int sourceHeight = HEIGHT;
         // Adjustments for sprite sheet position.
-        animFrameX += this.spritePos.x;
-        animFrameY += this.spritePos.y;
-        if (isValidDuckingState()) {
-            canvas.drawBitmap(BaseBitmap,
-                    new Rect(animFrameX, animFrameY, sourceWidth, sourceHeight),
-                    new Rect(xPos, yPos, WIDTH_DUCK, HEIGHT),
-                    null);
-        } else {
-            Paint p = new Paint();
-            p.setColor(Color.RED);
-            p.setStrokeWidth(2f);
-            if (this.ducking && this.currStatus == DinoState.CRASHED) {
-                this.xPos++;
-            }
-            Rect sRect = getScaledSource(animFrameX, animFrameY, sourceWidth, sourceHeight);
-            Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
-            canvas.drawBitmap(BaseBitmap,sRect,tRect,bitmapPaint);
-
+        animFrameX += spritePos.x;
+        animFrameY += spritePos.y;
+        Paint p = new Paint();
+        p.setColor(Color.RED);
+        p.setStrokeWidth(2f);
+        if (currStatus == DinoState.CRASHED && preCrashState == DinoState.DUCKING) {
+            xPos++;
         }
+        Rect sRect = getScaledSource(animFrameX, animFrameY, sourceWidth, sourceHeight);
+        Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
+        canvas.drawBitmap(BaseBitmap, sRect, tRect, bitmapPaint);
     }
 
     public Rect getCollisionBox() {
         return collisionBox;
     }
 
-    public class AnimFrames {
-        public int[] frames;
-        public int FPS;
-        public AnimFrames(int[] f, int fps) {
+    private class AnimFrames {
+        final int[] frames;
+        final int FPS;
+
+        AnimFrames(int[] f, int fps) {
             FPS = fps;
             frames = f;
         }
+    }
+
+    public void setPlayingIntro(boolean playingIntro) {
+        this.playingIntro = playingIntro;
+    }
+
+    private boolean isDucking() {
+        return currStatus == DinoState.DUCKING;
+    }
+
+    private boolean isJumping() {
+        return currStatus == DinoState.JUMPING;
     }
 }

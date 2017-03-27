@@ -118,14 +118,14 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         mRunningTime = 0;
         mIntroFramesPassed = 0;
         mPlayingIntro = false;
-        mDino.playingIntro = false;
+        mDino.setPlayingIntro(false);
     }
 
     private void startWithIntro() {
         if (!mStarted && !mGameOver) {
             log("startWithIntro");
             mPlayingIntro = true;
-            mDino.playingIntro = true;
+            mDino.setPlayingIntro(true);
         } else if (mGameOver) {
             restart();
         }
@@ -161,9 +161,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             if (!mStarted) {
                 mStarted = true;
             }
-            if (!mDino.jumping) {
-                mDino.startJump((int) mCurrentSpeed);
-            }
+            mDino.tryJump((int) mCurrentSpeed);
         }
     }
 
