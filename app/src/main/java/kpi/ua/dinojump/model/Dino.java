@@ -1,18 +1,16 @@
 package kpi.ua.dinojump.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import kpi.ua.dinojump.Runner;
-
-import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 
 public class Dino extends BaseEntity {
@@ -46,7 +44,8 @@ public class Dino extends BaseEntity {
     private Map<DinoState, AnimFrames> animFrames;
     private int[] currentAnimFrames;
 
-    public Dino(Point s) {
+    public Dino(Bitmap baseBitmap, Point s) {
+        super(baseBitmap);
         spritePos = s;
         xPos = 0;
         yPos = 0;
@@ -177,7 +176,7 @@ public class Dino extends BaseEntity {
         }
         Rect sRect = getScaledSource(animFrameX, animFrameY, sourceWidth, sourceHeight);
         Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(BaseBitmap, sRect, tRect, bitmapPaint);
+        canvas.drawBitmap(baseBitmap, sRect, tRect, bitmapPaint);
     }
 
     public Rect getCollisionBox() {

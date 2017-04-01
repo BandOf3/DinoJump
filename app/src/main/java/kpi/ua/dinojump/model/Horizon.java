@@ -1,5 +1,6 @@
 package kpi.ua.dinojump.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 
@@ -24,7 +25,8 @@ public class Horizon extends BaseEntity {
     private List<Obstacle> obstacles;
     private List<Integer> obstacleHistory;
 
-    public Horizon(Point dimension, double gapCoefficient) {
+    public Horizon(Bitmap baseBitmap, Point dimension, double gapCoefficient) {
+        super(baseBitmap);
         this.dimensions = dimension;
         this.gapCoefficient = gapCoefficient;
         this.cloudFrequency = CLOUD_FREQUENCY;
@@ -37,11 +39,11 @@ public class Horizon extends BaseEntity {
 
     private void init() {
         this.addCloud();
-        this.horizonLine = new HorizonLine(Runner.HORIZON);
+        this.horizonLine = new HorizonLine(baseBitmap, Runner.HORIZON);
     }
 
     private void addCloud() {
-        this.clouds.add(new Cloud(Runner.CLOUD,
+        this.clouds.add(new Cloud(baseBitmap, Runner.CLOUD,
                 this.dimensions.x));
     }
 
@@ -96,10 +98,10 @@ public class Horizon extends BaseEntity {
         Obstacle.types.ObstacleTypes obstacleType = Obstacle.types.getObstacleTypes(obstacleTypeIndex);
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
-        if (this.duplicateObstacleCheck(obstacleType.type) ||currentSpeed < obstacleType.minSpeed) {
+        if (this.duplicateObstacleCheck(obstacleType.type) || currentSpeed < obstacleType.minSpeed) {
             this.addNewObstacle(currentSpeed);
         } else {
-            this.obstacles.add(new Obstacle(obstacleType,dimensions,gapCoefficient,currentSpeed));
+            this.obstacles.add(new Obstacle(baseBitmap, obstacleType, dimensions, gapCoefficient, currentSpeed));
             this.obstacleHistory.add(obstacleType.type);
             if (this.obstacleHistory.size() > 1) {
                 obstacleHistory.remove(0);

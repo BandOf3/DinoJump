@@ -1,6 +1,7 @@
 package kpi.ua.dinojump.core;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -44,15 +45,15 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     private final GameViewContract mGameContract;
     private final List<BaseEntity> mDrawableEntities;
 
-    public GameLogic(Context context, GameViewContract gameContract, Point dimensions, int fps) {
+    public GameLogic(Context context, Bitmap baseBitmap, GameViewContract gameContract, Point dimensions, int fps) {
         super(context);
         this.mPlaying = true;
         this.mGameContract = gameContract;
         mFps = fps;
         mCurrentSpeed = Runner.SPEED;
-        mHorizon = new Horizon(dimensions, Runner.GAP_COEFFICIENT);
-        mDistanceMeter = new ItemDistanceMeter(Runner.TEXT_SPRITE, dimensions.x);
-        mDino = new Dino(Runner.TREX);
+        mHorizon = new Horizon(baseBitmap, dimensions, Runner.GAP_COEFFICIENT);
+        mDistanceMeter = new ItemDistanceMeter(baseBitmap, Runner.TEXT_SPRITE, dimensions.x);
+        mDino = new Dino(baseBitmap, Runner.TREX);
         mDrawableEntities = Arrays.asList(mHorizon, mDistanceMeter, mDino);
     }
 

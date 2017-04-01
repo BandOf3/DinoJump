@@ -1,17 +1,20 @@
 package kpi.ua.dinojump.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 
 public abstract class BaseEntity {
-    public static int BaseWidth = 1204;
+    public static final int BASE_WIDTH = 1204;
     public static double Scale = 1.;
     public static double ScaleTarget = 1;
     public static int startX = 0;
     public static int startY = 0;
 
     protected Point spritePos;
+
+    protected final Bitmap baseBitmap;
 
     public Rect getScaledSource(int l, int t, int w, int h) {
         int rl = (int) (l * Scale);
@@ -37,5 +40,7 @@ public abstract class BaseEntity {
 
     public abstract void draw(Canvas canvas);
 
-
+    public BaseEntity(Bitmap baseBitmap) {
+        this.baseBitmap = baseBitmap;
+    }
 }

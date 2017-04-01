@@ -1,10 +1,9 @@
 package kpi.ua.dinojump.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-
-import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 
 public class ItemDistanceMeter extends BaseEntity {
@@ -30,12 +29,12 @@ public class ItemDistanceMeter extends BaseEntity {
     private long highScore;
     private int maxScoreUnits;
     private boolean achievement; // animate score after reaching every 100 pts;
-    private String defaultString;
     private int flashTimer;
     private int flashIterations;
     private long distance;
 
-    public ItemDistanceMeter(Point pos, int w) {
+    public ItemDistanceMeter(Bitmap baseBitmap, Point pos, int w) {
+        super(baseBitmap);
         this.spritePos = pos;
         this.xPos = 0;
         this.yPos = 5;
@@ -131,7 +130,7 @@ public class ItemDistanceMeter extends BaseEntity {
         }
         Rect sRect = getScaledSource(WIDTH * value + spritePos.x, spritePos.y, WIDTH, HEIGHT);
         Rect tRect = getScaledTarget(DEST_WIDTH * digitPos + deltaX, yPos + yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
+        canvas.drawBitmap(baseBitmap, sRect, tRect, null);
     }
 
     private long getActualDistance(double distance) {

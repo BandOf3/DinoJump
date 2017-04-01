@@ -1,12 +1,11 @@
 package kpi.ua.dinojump.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 
 import kpi.ua.dinojump.view.GameView;
-
-import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class HorizonLine extends BaseEntity {
 
@@ -17,7 +16,8 @@ public class HorizonLine extends BaseEntity {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 12;
 
-    public HorizonLine(Point pos) {
+    public HorizonLine(Bitmap baseBitmap, Point pos) {
+        super(baseBitmap);
         spritePos = pos;
         sourceXPos[0] = spritePos.x;
         sourceXPos[1] = spritePos.x + WIDTH;
@@ -50,10 +50,10 @@ public class HorizonLine extends BaseEntity {
     public void draw(Canvas canvas) {
         Rect sRect1 = getScaledSource(sourceXPos[0], spritePos.y, WIDTH, HEIGHT);
         Rect tRect1 = getScaledTarget((int) xPos[0], yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(BaseBitmap,sRect1,tRect1,null);
+        canvas.drawBitmap(baseBitmap, sRect1, tRect1, null);
         Rect sRect2 = getScaledSource(sourceXPos[1], spritePos.y, WIDTH, HEIGHT);
         Rect tRect2 = getScaledTarget((int) xPos[1], yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(BaseBitmap,sRect2,tRect2,null);
+        canvas.drawBitmap(baseBitmap, sRect2, tRect2, null);
     }
 
     public void reset() {

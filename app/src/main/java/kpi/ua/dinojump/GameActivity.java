@@ -1,6 +1,7 @@
 package kpi.ua.dinojump;
 
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,8 +12,6 @@ import kpi.ua.dinojump.core.GameLogic;
 import kpi.ua.dinojump.core.GameRunnable;
 import kpi.ua.dinojump.model.BaseEntity;
 import kpi.ua.dinojump.view.GameView;
-
-import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -28,15 +27,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void init() {
-        mGameView = new GameView(this);
+        Bitmap baseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dino_sprite);
+
+        mGameView = new GameView(this, baseBitmap);
         setContentView(mGameView);
 
         mGameLogic = mGameView.getGameLogic();
         Handler handler = new Handler(Looper.getMainLooper());
         mGameRunnable = new GameRunnable(mGameLogic, mGameView, handler, 60);
 
-        BaseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dino_sprite);
-        BaseEntity.Scale = (double) BaseBitmap.getWidth() / BaseEntity.BaseWidth;
+        BaseEntity.Scale = (double) baseBitmap.getWidth() / BaseEntity.BASE_WIDTH;
 
         mGameRunnable.run();
     }

@@ -1,6 +1,7 @@
 package kpi.ua.dinojump.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -23,11 +24,11 @@ public class GameView extends SurfaceView implements GameViewContract {
 
     private final GameLogic mGameLogic;
 
-    public GameView(Context context) {
+    public GameView(Context context, Bitmap baseBitmap) {
         super(context);
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         Point dimensions = new Point(600, 150);
-        mGameLogic = new GameLogic(getContext(), this, dimensions, FPS);
+        mGameLogic = new GameLogic(getContext(), baseBitmap, this, dimensions, FPS);
         setOnTouchListener(mGameLogic);
     }
 
@@ -38,8 +39,6 @@ public class GameView extends SurfaceView implements GameViewContract {
     public void gameOver() {
         mVibrator.vibrate(200);
         log("game over");
-
-        // TODO: Make restart after button press.
     }
 
     @Override

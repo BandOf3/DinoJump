@@ -1,13 +1,12 @@
 package kpi.ua.dinojump.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 
 import kpi.ua.dinojump.Runner;
 import kpi.ua.dinojump.view.GameView;
-
-import static kpi.ua.dinojump.Runner.BaseBitmap;
 
 public class Obstacle extends BaseEntity {
 
@@ -22,74 +21,75 @@ public class Obstacle extends BaseEntity {
     private long timer;
     private Rect collisionDetector;
 
-    public Obstacle(types.ObstacleTypes type, Point dimensions, double gapCoefficient, double speed) {
-        this.spritePos = type.spritePos;
-        this.typeConfig = type;
+    public Obstacle(Bitmap baseBitmap, types.ObstacleTypes type, Point dimensions, double gapCoefficient, double speed) {
+        super(baseBitmap);
+        spritePos = type.spritePos;
+        typeConfig = type;
         this.gapCoefficient = gapCoefficient;
-        this.size = (int) getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
+        size = (int) getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
         this.dimensions = dimensions;
-        this.toRemove = false;
-        this.xPos = 0;
-        this.yPos = 0;
-        this.width = 0;
-        this.gap = 0;
-        this.speedOffset = 0;
+        toRemove = false;
+        xPos = 0;
+        yPos = 0;
+        width = 0;
+        gap = 0;
+        speedOffset = 0;
         // For animated obstacles.
-        this.currentFrame = 0;
-        this.timer = 0;
-        this.init(speed);
+        currentFrame = 0;
+        timer = 0;
+        init(speed);
         collisionDetector = new Rect(xPos, yPos, typeConfig.width, typeConfig.height);
     }
 
     private void init(double speed) {
         // Only allow sizing if we're at the right speed.
-        if (this.size > 1 && this.typeConfig.multipleSpeed > speed) {
-            this.size = 1;
+        if (size > 1 && typeConfig.multipleSpeed > speed) {
+            size = 1;
         }
-        this.width = this.typeConfig.width * this.size;
-        this.xPos = this.dimensions.x - this.width;
+        width = typeConfig.width * size;
+        xPos = dimensions.x - width;
         // Check if obstacle can be positioned at various heights.
-        if (this.typeConfig.yPos.length > 1) {
-            this.yPos = this.typeConfig.yPos[((int) getRandomNum(0, this.typeConfig.yPos.length - 1))];
+        if (typeConfig.yPos.length > 1) {
+            yPos = typeConfig.yPos[((int) getRandomNum(0, typeConfig.yPos.length - 1))];
         } else {
-            this.yPos = this.typeConfig.yPos[0];
+            yPos = typeConfig.yPos[0];
         }
         // For obstacles that go at a different speed from the horizon.
-        if (this.typeConfig.speedOffset > 0) {
-            this.speedOffset = Math.random() > 0.5 ? this.typeConfig.speedOffset :
-                    -this.typeConfig.speedOffset;
+        if (typeConfig.speedOffset > 0) {
+            speedOffset = Math.random() > 0.5 ? typeConfig.speedOffset :
+                    -typeConfig.speedOffset;
         }
-        this.gap = (int) this.getGap(this.gapCoefficient, speed);
+        gap = (int) getGap(gapCoefficient, speed);
     }
 
     private double getGap(double gapCoefficient, double speed) {
-        int minGap = (int) Math.round(this.width * speed + this.typeConfig.minGap * gapCoefficient);
+        int minGap = (int) Math.round(width * speed + typeConfig.minGap * gapCoefficient);
         int maxGap = (int) Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
         return getRandomNum(minGap, maxGap);
     }
 
     public boolean isVisible() {
-        return this.xPos + this.width > 0;
+        return xPos + width > 0;
     }
 
     public void update(long deltaTime, double speed) {
-        if (!this.toRemove) {
-            if (this.typeConfig.speedOffset > 0) {
-                speed += this.speedOffset;
+        if (!toRemove) {
+            if (typeConfig.speedOffset > 0) {
+                speed += speedOffset;
             }
-            this.xPos -= Math.floor((speed * GameView.FPS / 1000) * deltaTime);
+            xPos -= Math.floor((speed * GameView.FPS / 1000) * deltaTime);
             // Update frame
-            if (this.typeConfig.numFrames > 0) {
-                this.timer += deltaTime;
-                if (this.timer >= this.typeConfig.frameRate) {
-                    this.currentFrame =
-                            this.currentFrame == this.typeConfig.numFrames - 1 ?
-                                    0 : this.currentFrame + 1;
-                    this.timer = 0;
+            if (typeConfig.numFrames > 0) {
+                timer += deltaTime;
+                if (timer >= typeConfig.frameRate) {
+                    currentFrame =
+                            currentFrame == typeConfig.numFrames - 1 ?
+                                    0 : currentFrame + 1;
+                    timer = 0;
                 }
             }
-            if (!this.isVisible()) {
-                this.toRemove = true;
+            if (!isVisible()) {
+                toRemove = true;
             }
         }
         updateCollisionDetector();
@@ -103,16 +103,16 @@ public class Obstacle extends BaseEntity {
     }
 
     public void draw(Canvas canvas) {
-        int sourceWidth = this.typeConfig.width;
-        int sourceHeight = this.typeConfig.height;
-        int sourceX = (int) ((sourceWidth * this.size) * (0.5 * (this.size - 1)) +
-                this.spritePos.x);
-        if (this.currentFrame > 0) {
-            sourceX += sourceWidth * this.currentFrame;
+        int sourceWidth = typeConfig.width;
+        int sourceHeight = typeConfig.height;
+        int sourceX = (int) ((sourceWidth * size) * (0.5 * (size - 1)) +
+                spritePos.x);
+        if (currentFrame > 0) {
+            sourceX += sourceWidth * currentFrame;
         }
-        Rect sRect = getScaledSource(sourceX, this.spritePos.y, sourceWidth * this.size, sourceHeight);
-        Rect tRect = getScaledTarget(this.xPos, this.yPos, this.typeConfig.width * this.size, this.typeConfig.height);
-        canvas.drawBitmap(BaseBitmap, sRect, tRect, null);
+        Rect sRect = getScaledSource(sourceX, spritePos.y, sourceWidth * size, sourceHeight);
+        Rect tRect = getScaledTarget(xPos, yPos, typeConfig.width * size, typeConfig.height);
+        canvas.drawBitmap(baseBitmap, sRect, tRect, null);
     }
 
     public Rect getCollisionDetector() {
