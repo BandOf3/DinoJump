@@ -1,12 +1,12 @@
 package kpi.ua.dinojump.model;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import kpi.ua.dinojump.Runner;
-import kpi.ua.dinojump.view.GameView;
+import kpi.ua.dinojump.Constants;
+
+import static kpi.ua.dinojump.Constants.FPS;
 
 public class Obstacle extends BaseEntity {
 
@@ -21,8 +21,7 @@ public class Obstacle extends BaseEntity {
     private long timer;
     private Rect collisionDetector;
 
-    public Obstacle(Bitmap baseBitmap, types.ObstacleTypes type, Point dimensions, double gapCoefficient, double speed) {
-        super(baseBitmap);
+    public Obstacle(types.ObstacleTypes type, Point dimensions, double gapCoefficient, double speed) {
         spritePos = type.spritePos;
         typeConfig = type;
         this.gapCoefficient = gapCoefficient;
@@ -77,7 +76,7 @@ public class Obstacle extends BaseEntity {
             if (typeConfig.speedOffset > 0) {
                 speed += speedOffset;
             }
-            xPos -= Math.floor((speed * GameView.FPS / 1000) * deltaTime);
+            xPos -= Math.floor((speed * FPS / 1000) * deltaTime);
             // Update frame
             if (typeConfig.numFrames > 0) {
                 timer += deltaTime;
@@ -112,7 +111,7 @@ public class Obstacle extends BaseEntity {
         }
         Rect sRect = getScaledSource(sourceX, spritePos.y, sourceWidth * size, sourceHeight);
         Rect tRect = getScaledTarget(xPos, yPos, typeConfig.width * size, typeConfig.height);
-        canvas.drawBitmap(baseBitmap, sRect, tRect, null);
+        canvas.drawBitmap(getBaseBitmap(), sRect, tRect, null);
     }
 
     public Rect getCollisionDetector() {
@@ -168,18 +167,18 @@ public class Obstacle extends BaseEntity {
                 case 1:
                     ret = new CACTUS_LARGE();
                     ret.type = 1;
-                    ret.spritePos = Runner.CACTUS_LARGE;
+                    ret.spritePos = Constants.CACTUS_LARGE;
                     break;
                 case 2:
                     ret = new PTERODACTYL();
                     ret.type = 2;
-                    ret.spritePos = Runner.PTERODACTYL;
+                    ret.spritePos = Constants.PTERODACTYL;
                     break;
                 case 0:
                 default:
                     ret = new CACTUS_SMALL();
                     ret.type = 0;
-                    ret.spritePos = Runner.CACTUS_SMALL;
+                    ret.spritePos = Constants.CACTUS_SMALL;
                     break;
             }
             return ret;

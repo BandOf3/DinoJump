@@ -11,7 +11,7 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.List;
 
-import kpi.ua.dinojump.Runner;
+import kpi.ua.dinojump.Constants;
 import kpi.ua.dinojump.model.BaseEntity;
 import kpi.ua.dinojump.model.Dino;
 import kpi.ua.dinojump.model.Horizon;
@@ -45,15 +45,15 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     private final GameViewContract mGameContract;
     private final List<BaseEntity> mDrawableEntities;
 
-    public GameLogic(Context context, Bitmap baseBitmap, GameViewContract gameContract, Point dimensions, int fps) {
+    public GameLogic(Context context, GameViewContract gameContract, Point dimensions, int fps) {
         super(context);
         this.mPlaying = true;
         this.mGameContract = gameContract;
         mFps = fps;
-        mCurrentSpeed = Runner.SPEED;
-        mHorizon = new Horizon(baseBitmap, dimensions, Runner.GAP_COEFFICIENT);
-        mDistanceMeter = new ItemDistanceMeter(baseBitmap, Runner.TEXT_SPRITE, dimensions.x);
-        mDino = new Dino(baseBitmap, Runner.TREX);
+        mCurrentSpeed = Constants.SPEED;
+        mHorizon = new Horizon(dimensions, Constants.GAP_COEFFICIENT);
+        mDistanceMeter = new ItemDistanceMeter(Constants.TEXT_SPRITE, dimensions.x);
+        mDino = new Dino(Constants.TREX);
         mDrawableEntities = Arrays.asList(mHorizon, mDistanceMeter, mDino);
     }
 
@@ -63,7 +63,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             return;
         }
         mRunningTime += deltaTime;
-        boolean showObstacles = mRunningTime > Runner.CLEAR_TIME;
+        boolean showObstacles = mRunningTime > Constants.CLEAR_TIME;
         // First jump triggers the intro.
         if (!mPlayingIntro) {
             startWithIntro();
@@ -79,8 +79,8 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             gameOver();
         } else if (!mPlayingIntro) {
             mDistanceRan += mCurrentSpeed * deltaTime * mFps / 1000L;
-            if (mCurrentSpeed < Runner.MAX_SPEED) {
-                mCurrentSpeed += Runner.ACCELERATION;
+            if (mCurrentSpeed < Constants.MAX_SPEED) {
+                mCurrentSpeed += Constants.ACCELERATION;
             }
         }
         mDistanceMeter.update(deltaTime, Math.ceil(mDistanceRan));
@@ -144,7 +144,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
             mRunningTime = 0;
             mGameOver = false;
             mDistanceRan = 0;
-            setSpeed(Runner.SPEED);
+            setSpeed(Constants.SPEED);
             mDistanceMeter.reset();
             mHorizon.reset();
             mDino.reset();

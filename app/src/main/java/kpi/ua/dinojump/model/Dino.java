@@ -1,6 +1,5 @@
 package kpi.ua.dinojump.model;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,21 +9,21 @@ import android.graphics.Rect;
 import java.util.HashMap;
 import java.util.Map;
 
-import kpi.ua.dinojump.Runner;
+import kpi.ua.dinojump.Constants;
 
 
 public class Dino extends BaseEntity {
 
-    private static int DROP_VELOCITY = 4;
-    private static double UP_GRAVITY = 0.6;
-    private static double DOWN_GRAVITY = 1.8;
-    private static int HEIGHT = 47;
-    private static int INITIAL_JUMP_VELOCITY = -18;
+    private static final int DROP_VELOCITY = 4;
+    private static final double UP_GRAVITY = 0.6;
+    private static final double DOWN_GRAVITY = 1.8;
+    private static final int HEIGHT = 47;
+    private static final int INITIAL_JUMP_VELOCITY = -18;
 
     // TODO: Make it dependent on the length of press.
-    private static int JUMP_HEIGHT = 40;
-    private static int WIDTH = 44;
-    private static int WIDTH_DUCK = 59;
+    private static final int JUMP_HEIGHT = 40;
+    private static final int WIDTH = 44;
+    private static final int WIDTH_DUCK = 59;
 
     //Possible dino states
     public enum DinoState {
@@ -44,8 +43,7 @@ public class Dino extends BaseEntity {
     private Map<DinoState, AnimFrames> animFrames;
     private int[] currentAnimFrames;
 
-    public Dino(Bitmap baseBitmap, Point s) {
-        super(baseBitmap);
+    public Dino(Point s) {
         spritePos = s;
         xPos = 0;
         yPos = 0;
@@ -61,7 +59,7 @@ public class Dino extends BaseEntity {
     private void init() {
         initAnimationFrames();
         collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
-        groundYPos = Runner.HEIGHT - HEIGHT - Runner.BOTTOM_PAD;
+        groundYPos = Constants.HEIGHT - HEIGHT - Constants.BOTTOM_PAD;
         yPos = groundYPos;
         xPos = 100;
         yPos = 100;
@@ -176,7 +174,7 @@ public class Dino extends BaseEntity {
         }
         Rect sRect = getScaledSource(animFrameX, animFrameY, sourceWidth, sourceHeight);
         Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(baseBitmap, sRect, tRect, bitmapPaint);
+        canvas.drawBitmap(getBaseBitmap(), sRect, tRect, bitmapPaint);
     }
 
     public Rect getCollisionBox() {

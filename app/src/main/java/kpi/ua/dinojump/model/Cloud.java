@@ -1,6 +1,5 @@
 package kpi.ua.dinojump.model;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -19,13 +18,12 @@ public class Cloud extends BaseEntity {
     private boolean toRemove;
     private double cloudGap;
 
-    public Cloud(Bitmap baseBitmap, Point sprite, int xPos) {
-        super(baseBitmap);
+    public Cloud(Point sprite, int xPos) {
         this.spritePos = sprite;
         this.xPos = xPos;
-        this.yPos = (int) getRandomNum(MAX_SKY_LEVEL,MIN_SKY_LEVEL);
+        this.yPos = (int) getRandomNum(MAX_SKY_LEVEL, MIN_SKY_LEVEL);
         this.toRemove = false;
-        this.cloudGap = getRandomNum(MIN_CLOUD_GAP,MAX_CLOUD_GAP);
+        this.cloudGap = getRandomNum(MIN_CLOUD_GAP, MAX_CLOUD_GAP);
     }
 
     public void update(double speed) {
@@ -36,12 +34,14 @@ public class Cloud extends BaseEntity {
         }
     }
 
-    public int getXPosition() { return xPos; }
+    public int getXPosition() {
+        return xPos;
+    }
 
     public void draw(Canvas canvas) {
         Rect sRect = getScaledSource(spritePos.x, spritePos.y, WIDTH, HEIGHT);
         Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(baseBitmap, sRect, tRect, null);
+        canvas.drawBitmap(getBaseBitmap(), sRect, tRect, null);
     }
 
     public double getCloudGap() {

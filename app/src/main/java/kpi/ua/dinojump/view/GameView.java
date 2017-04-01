@@ -10,13 +10,16 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import kpi.ua.dinojump.Configuration;
 import kpi.ua.dinojump.core.GameLogic;
 import kpi.ua.dinojump.model.BaseEntity;
+
+import static kpi.ua.dinojump.Constants.FPS;
+import static kpi.ua.dinojump.Constants.GAME_OVER_VIBRATE_LEN;
 
 
 public class GameView extends SurfaceView implements GameViewContract {
     public static final String LOG_TAG = GameView.class.getName();
-    public static int FPS = 60;
 
     private final Vibrator mVibrator;
     public int mWidth;
@@ -28,7 +31,7 @@ public class GameView extends SurfaceView implements GameViewContract {
         super(context);
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         Point dimensions = new Point(600, 150);
-        mGameLogic = new GameLogic(getContext(), baseBitmap, this, dimensions, FPS);
+        mGameLogic = new GameLogic(getContext(), this, dimensions, FPS);
         setOnTouchListener(mGameLogic);
     }
 
@@ -37,7 +40,7 @@ public class GameView extends SurfaceView implements GameViewContract {
     }
 
     public void gameOver() {
-        mVibrator.vibrate(200);
+        mVibrator.vibrate(GAME_OVER_VIBRATE_LEN);
         log("game over");
     }
 
@@ -59,14 +62,15 @@ public class GameView extends SurfaceView implements GameViewContract {
             if (canvasWidth != mWidth || canvasHeight != mHeight) {
                 mWidth = canvasWidth;
                 mHeight = canvasHeight;
+                Configuration conf = Configuration.get();
                 if (mWidth / mHeight >= 4) {
-                    BaseEntity.ScaleTarget = (double) mHeight / 150;
-                    BaseEntity.startY = 0;
-                    BaseEntity.startX = (mWidth - 4 * mHeight) / 2;
+                    conf.setTargetScale((double) mHeight / 150);
+                    conf.setStartY(0);
+                    conf.setStartX((mWidth - 4 * mHeight) / 2);
                 } else {
-                    BaseEntity.ScaleTarget = (double) mWidth / 600;
-                    BaseEntity.startY = (mHeight - mWidth / 4) / 2;
-                    BaseEntity.startX = 0;
+                    conf.setTargetScale((double) mWidth / 600);
+                    conf.setStartY((mHeight - mWidth / 4) / 2);
+                    conf.setStartX(0);
                 }
             }
             canvas.drawColor(Color.WHITE);

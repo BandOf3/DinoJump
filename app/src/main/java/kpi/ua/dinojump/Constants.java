@@ -3,7 +3,7 @@ package kpi.ua.dinojump;
 
 import android.graphics.Point;
 
-public class Runner {
+public class Constants {
 
     public static final double ACCELERATION = 0.001;
     public static final int BOTTOM_PAD = 10;
@@ -22,4 +22,7 @@ public class Runner {
     public static final Point PTERODACTYL = new Point(134, 2);
 
     public static final int HEIGHT = 150;
+
+    public static final int FPS = 60;
+    public static final int GAME_OVER_VIBRATE_LEN = 200;
 }

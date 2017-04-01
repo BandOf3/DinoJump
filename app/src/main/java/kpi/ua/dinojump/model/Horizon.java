@@ -1,13 +1,12 @@
 package kpi.ua.dinojump.model;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import kpi.ua.dinojump.Runner;
+import kpi.ua.dinojump.Constants;
 
 
 public class Horizon extends BaseEntity {
@@ -25,8 +24,7 @@ public class Horizon extends BaseEntity {
     private List<Obstacle> obstacles;
     private List<Integer> obstacleHistory;
 
-    public Horizon(Bitmap baseBitmap, Point dimension, double gapCoefficient) {
-        super(baseBitmap);
+    public Horizon(Point dimension, double gapCoefficient) {
         this.dimensions = dimension;
         this.gapCoefficient = gapCoefficient;
         this.cloudFrequency = CLOUD_FREQUENCY;
@@ -39,11 +37,11 @@ public class Horizon extends BaseEntity {
 
     private void init() {
         this.addCloud();
-        this.horizonLine = new HorizonLine(baseBitmap, Runner.HORIZON);
+        this.horizonLine = new HorizonLine(Constants.HORIZON);
     }
 
     private void addCloud() {
-        this.clouds.add(new Cloud(baseBitmap, Runner.CLOUD,
+        this.clouds.add(new Cloud(Constants.CLOUD,
                 this.dimensions.x));
     }
 
@@ -101,7 +99,7 @@ public class Horizon extends BaseEntity {
         if (this.duplicateObstacleCheck(obstacleType.type) || currentSpeed < obstacleType.minSpeed) {
             this.addNewObstacle(currentSpeed);
         } else {
-            this.obstacles.add(new Obstacle(baseBitmap, obstacleType, dimensions, gapCoefficient, currentSpeed));
+            this.obstacles.add(new Obstacle(obstacleType, dimensions, gapCoefficient, currentSpeed));
             this.obstacleHistory.add(obstacleType.type);
             if (this.obstacleHistory.size() > 1) {
                 obstacleHistory.remove(0);
@@ -114,7 +112,7 @@ public class Horizon extends BaseEntity {
         for (int i = 0; i < this.obstacleHistory.size(); i++) {
             duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ? duplicateCount + 1 : 0;
         }
-        return duplicateCount >= Runner.MAX_OBSTACLE_DUPLICATION;
+        return duplicateCount >= Constants.MAX_OBSTACLE_DUPLICATION;
     }
 
     private void updateClouds(long deltaTime, double speed) {

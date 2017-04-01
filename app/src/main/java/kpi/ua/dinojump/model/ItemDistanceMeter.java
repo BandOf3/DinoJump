@@ -1,6 +1,5 @@
 package kpi.ua.dinojump.model;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -33,8 +32,7 @@ public class ItemDistanceMeter extends BaseEntity {
     private int flashIterations;
     private long distance;
 
-    public ItemDistanceMeter(Bitmap baseBitmap, Point pos, int w) {
-        super(baseBitmap);
+    public ItemDistanceMeter(Point pos, int w) {
         this.spritePos = pos;
         this.xPos = 0;
         this.yPos = 5;
@@ -130,7 +128,7 @@ public class ItemDistanceMeter extends BaseEntity {
         }
         Rect sRect = getScaledSource(WIDTH * value + spritePos.x, spritePos.y, WIDTH, HEIGHT);
         Rect tRect = getScaledTarget(DEST_WIDTH * digitPos + deltaX, yPos + yPos, WIDTH, HEIGHT);
-        canvas.drawBitmap(baseBitmap, sRect, tRect, null);
+        canvas.drawBitmap(getBaseBitmap(), sRect, tRect, null);
     }
 
     private long getActualDistance(double distance) {

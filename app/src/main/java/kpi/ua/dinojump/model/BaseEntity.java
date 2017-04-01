@@ -5,33 +5,37 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 
+import kpi.ua.dinojump.Configuration;
+
 public abstract class BaseEntity {
     public static final int BASE_WIDTH = 1204;
-    public static double Scale = 1.;
-    public static double ScaleTarget = 1;
-    public static int startX = 0;
-    public static int startY = 0;
 
     protected Point spritePos;
 
-    protected final Bitmap baseBitmap;
-
     public Rect getScaledSource(int l, int t, int w, int h) {
-        int rl = (int) (l * Scale);
-        int rt = (int) (t * Scale);
-        int rr = (int) (rl + w * Scale);
-        int rb = (int) (rt + h * Scale);
+        Configuration conf = Configuration.get();
+        double scale = conf.getBitmapScale();
+        int rl = (int) (l * scale);
+        int rt = (int) (t * scale);
+        int rr = (int) (rl + w * scale);
+        int rb = (int) (rt + h * scale);
         return new Rect(rl, rt, rr, rb);
     }
 
     public Rect getScaledTarget(int l, int t, int w, int h) {
-        int sx = startX;
-        int sy = startY;
-        int rl = (int) (l * ScaleTarget + sx);
-        int rt = (int) (t * ScaleTarget + sy);
-        int rr = (int) (rl + w * ScaleTarget);
-        int rb = (int) (rt + h * ScaleTarget);
+        Configuration conf = Configuration.get();
+        int sx = conf.getStartX();
+        int sy = conf.getStartY();
+        double scale = conf.getTargetScale();
+        int rl = (int) (l * scale + sx);
+        int rt = (int) (t * scale + sy);
+        int rr = (int) (rl + w * scale);
+        int rb = (int) (rt + h * scale);
         return new Rect(rl, rt, rr, rb);
+    }
+
+    protected Bitmap getBaseBitmap() {
+        return Configuration.get().getBaseBitmap();
     }
 
     public double getRandomNum(int min, int max) {
@@ -39,8 +43,4 @@ public abstract class BaseEntity {
     }
 
     public abstract void draw(Canvas canvas);
-
-    public BaseEntity(Bitmap baseBitmap) {
-        this.baseBitmap = baseBitmap;
-    }
 }

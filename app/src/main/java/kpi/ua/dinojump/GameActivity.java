@@ -28,6 +28,9 @@ public class GameActivity extends AppCompatActivity {
 
     public void init() {
         Bitmap baseBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dino_sprite);
+        Configuration conf = Configuration.get();
+        conf.setBaseBitmap(baseBitmap);
+        conf.setBitmapScale((double) baseBitmap.getWidth() / BaseEntity.BASE_WIDTH);
 
         mGameView = new GameView(this, baseBitmap);
         setContentView(mGameView);
@@ -35,8 +38,6 @@ public class GameActivity extends AppCompatActivity {
         mGameLogic = mGameView.getGameLogic();
         Handler handler = new Handler(Looper.getMainLooper());
         mGameRunnable = new GameRunnable(mGameLogic, mGameView, handler, 60);
-
-        BaseEntity.Scale = (double) baseBitmap.getWidth() / BaseEntity.BASE_WIDTH;
 
         mGameRunnable.run();
     }
