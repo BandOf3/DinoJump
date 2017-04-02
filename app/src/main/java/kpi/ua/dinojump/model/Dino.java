@@ -14,6 +14,7 @@ import kpi.ua.dinojump.Constants;
 
 public class Dino extends BaseEntity {
 
+    // TODO: Add width duck and check with pterodactyls
     private static final int HEIGHT = 47;
     private static final int WIDTH = 44;
     private static final int WIDTH_DUCK = 59;
@@ -43,26 +44,27 @@ public class Dino extends BaseEntity {
 
     private void init() {
         initAnimationFrames();
-        collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
         yPos = GROUND_POS;
         xPos = 100;
+        collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
         update(DinoState.WAITING);
     }
 
     private void initAnimationFrames() {
         animFrames = new HashMap<>();
-        animFrames.put(DinoState.WAITING, new AnimFrames(new int[]{44, 0}, 3));
-        animFrames.put(DinoState.RUNNING, new AnimFrames(new int[]{88, 132}, 12));
-        animFrames.put(DinoState.CRASHED, new AnimFrames(new int[]{220}, 60));
-        animFrames.put(DinoState.JUMPING, new AnimFrames(new int[]{0}, 60));
-        animFrames.put(DinoState.DUCKING, new AnimFrames(new int[]{262, 321}, 8));
+        animFrames.put(DinoState.WAITING, new AnimFrames(new int[]{44, 0}));
+        animFrames.put(DinoState.RUNNING, new AnimFrames(new int[]{88, 132}));
+        animFrames.put(DinoState.CRASHED, new AnimFrames(new int[]{220}));
+        animFrames.put(DinoState.JUMPING, new AnimFrames(new int[]{0}));
+        animFrames.put(DinoState.DUCKING, new AnimFrames(new int[]{264, 323}));
     }
 
     public void update() {
         if (isJumping()) {
             updateJump();
         }
-        draw(currentAnimFrames[currentFrame], 0);
+        animFrameX = currentAnimFrames[currentFrame];
+        animFrameY = 0;
         currentFrame = currentFrame == currentAnimFrames.length - 1 ? 0 : currentFrame + 1;
         collisionBox.left = xPos;
         collisionBox.top = yPos;
@@ -96,11 +98,6 @@ public class Dino extends BaseEntity {
         yPos = GROUND_POS;
         velocityY = 0;
         update(DinoState.RUNNING);
-    }
-
-    private void draw(int vx, int vy) {
-        animFrameX = vx;
-        animFrameY = vy;
     }
 
     public void startDuck() {
@@ -141,8 +138,9 @@ public class Dino extends BaseEntity {
         if (currStatus == DinoState.CRASHED && preCrashState == DinoState.DUCKING) {
             xPos++;
         }
-        Rect sRect = getScaledSource(animFrameX, animFrameY, isDucking() ? WIDTH_DUCK : WIDTH, HEIGHT);
-        Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
+        int rWidth = isDucking() ? WIDTH_DUCK : WIDTH;
+        Rect sRect = getScaledSource(animFrameX, animFrameY, rWidth, HEIGHT);
+        Rect tRect = getScaledTarget(xPos, yPos, rWidth, HEIGHT);
         canvas.drawBitmap(getBaseBitmap(), sRect, tRect, bitmapPaint);
     }
 
@@ -152,10 +150,8 @@ public class Dino extends BaseEntity {
 
     private class AnimFrames {
         final int[] frames;
-        final int FPS;
 
-        AnimFrames(int[] f, int fps) {
-            FPS = fps;
+        AnimFrames(int[] f) {
             frames = f;
         }
     }
