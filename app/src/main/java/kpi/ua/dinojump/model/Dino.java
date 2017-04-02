@@ -14,16 +14,10 @@ import kpi.ua.dinojump.Constants;
 
 public class Dino extends BaseEntity {
 
-    private static final int DROP_VELOCITY = 4;
-    private static final double UP_GRAVITY = 0.6;
-    private static final double DOWN_GRAVITY = 1.8;
     private static final int HEIGHT = 47;
-    private static final int INITIAL_JUMP_VELOCITY = -18;
-
-    // TODO: Make it dependent on the length of press.
-    private static final int JUMP_HEIGHT = 40;
     private static final int WIDTH = 44;
     private static final int WIDTH_DUCK = 59;
+    private static int GROUND_POS = Constants.HEIGHT - HEIGHT - Constants.BOTTOM_PAD;
 
     //Possible dino states
     public enum DinoState {
@@ -32,11 +26,9 @@ public class Dino extends BaseEntity {
 
     private DinoState preCrashState = null;
 
-    private double jumpVelocity;
+    private double velocityY;
     private boolean playingIntro;
-    private boolean goingDown;
 
-    private int groundYPos;
     private Rect collisionBox;
     private int xPos, yPos, animFrameX, animFrameY, currentFrame;
     private DinoState currStatus;
@@ -45,24 +37,16 @@ public class Dino extends BaseEntity {
 
     public Dino(Point s) {
         spritePos = s;
-        xPos = 0;
-        yPos = 0;
         // Position when on the ground.
-        groundYPos = 0;
-        currentFrame = 0;
         currStatus = DinoState.WAITING;
-        jumpVelocity = 0;
-        goingDown = false;
         init();
     }
 
     private void init() {
         initAnimationFrames();
         collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
-        groundYPos = Constants.HEIGHT - HEIGHT - Constants.BOTTOM_PAD;
-        yPos = groundYPos;
+        yPos = GROUND_POS;
         xPos = 100;
-        yPos = 100;
         update(DinoState.WAITING);
     }
 
@@ -104,37 +88,24 @@ public class Dino extends BaseEntity {
     }
 
     private void updateJump() {
-        int framesElapsed = 1;
+        yPos += Math.round(velocityY/* * speedDropCoefficient*/);
+        velocityY += Constants.GRAVITY;
 
-        yPos += Math.round(jumpVelocity/* * speedDropCoefficient*/);
-        jumpVelocity += (goingDown ? DOWN_GRAVITY : UP_GRAVITY) * framesElapsed;
-
-        // Reached max height
-        if (yPos < JUMP_HEIGHT) {
-            startDescending();
-        }
         // Back down at ground level. Jump completed.
-        if (yPos > groundYPos) {
+        if (yPos > GROUND_POS) {
             reset();
         }
     }
 
     public void reset() {
-        yPos = groundYPos;
-        jumpVelocity = 0;
+        yPos = GROUND_POS;
+        velocityY = 0;
         update(DinoState.RUNNING);
-        goingDown = false;
     }
 
     private void draw(int vx, int vy) {
         animFrameX = vx;
         animFrameY = vy;
-    }
-
-    public void tryJump(int speed) {
-        if (!isJumping()) {
-            startJump(speed);
-        }
     }
 
     public void tryDuck() {
@@ -143,18 +114,17 @@ public class Dino extends BaseEntity {
         }
     }
 
-    private void startJump(int speed) {
+    public void startJump() {
         if (!isJumping()) {
             update(DinoState.JUMPING);
-            // Tweak the jump velocity based on the speed.
-            jumpVelocity = INITIAL_JUMP_VELOCITY - (speed / 10);
-            goingDown = false;
+            velocityY = Constants.INITIAL_JUMP_VELOCITY;
         }
     }
 
-    private void startDescending() {
-        goingDown = true;
-        jumpVelocity = DROP_VELOCITY;
+    public void endJump() {
+        if (velocityY < -6.0) {
+            velocityY = -6.0;
+        }
     }
 
     public void draw(Canvas canvas) {

@@ -1,7 +1,6 @@
 package kpi.ua.dinojump.core;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -159,18 +158,8 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         Log.d(GameLogic.class.getName(), str);
     }
 
-    @Override
-    public void onSwipeTop() {
-        if (mGameOver) {
-            restart();
-        } else {
-            if (!mStarted) {
-                mStarted = true;
-            }
-            mDino.tryJump((int) mCurrentSpeed);
-        }
-    }
 
+    // ???
     @Override
     public void onSwipeBottom() {
         mDino.tryDuck();
@@ -180,6 +169,10 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (!mStarted) {
             restart();
+        } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            mDino.startJump();
+        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            mDino.endJump();
         }
         return super.onTouch(view, motionEvent);
     }

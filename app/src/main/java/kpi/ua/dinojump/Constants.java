@@ -11,7 +11,9 @@ public class Constants {
     public static final double GAP_COEFFICIENT = 0.6;
     public static final int MAX_OBSTACLE_DUPLICATION = 2;
     public static final int MAX_SPEED = 13;
-    public static final double SPEED = 6;
+    public static final double SPEED = 4;
+    public static final double GRAVITY = 2.4;
+    public static final int INITIAL_JUMP_VELOCITY = -26;
 
     public static final Point HORIZON = new Point(2, 54);
     public static final Point CLOUD = new Point(86, 2);
