@@ -32,7 +32,7 @@ public class GameActivity extends AppCompatActivity {
         conf.setBaseBitmap(baseBitmap);
         conf.setBitmapScale((double) baseBitmap.getWidth() / BaseEntity.BASE_WIDTH);
 
-        mGameView = new GameView(this, baseBitmap);
+        mGameView = new GameView(this);
         setContentView(mGameView);
 
         mGameLogic = mGameView.getGameLogic();

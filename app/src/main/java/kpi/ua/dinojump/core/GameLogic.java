@@ -1,6 +1,5 @@
 package kpi.ua.dinojump.core;
 
-import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -17,12 +16,11 @@ import kpi.ua.dinojump.model.Horizon;
 import kpi.ua.dinojump.model.ItemDistanceMeter;
 import kpi.ua.dinojump.model.Obstacle;
 import kpi.ua.dinojump.view.GameViewContract;
-import kpi.ua.dinojump.view.OnSwipeTouchListener;
 
 /**
  * Encapsulates logic of the game, mainly calculations physical positions of the objects.
  */
-public class GameLogic extends OnSwipeTouchListener implements GameLogicContract {
+public class GameLogic implements GameLogicContract, View.OnTouchListener  {
 
     private double mDistanceRan;
     private double mHighestScore;
@@ -44,8 +42,7 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
     private final GameViewContract mGameContract;
     private final List<BaseEntity> mDrawableEntities;
 
-    public GameLogic(Context context, GameViewContract gameContract, Point dimensions, int fps) {
-        super(context);
+    public GameLogic(GameViewContract gameContract, Point dimensions, int fps) {
         this.mPlaying = true;
         this.mGameContract = gameContract;
         mFps = fps;
@@ -158,23 +155,26 @@ public class GameLogic extends OnSwipeTouchListener implements GameLogicContract
         Log.d(GameLogic.class.getName(), str);
     }
 
-
-    // ???
-    @Override
-    public void onSwipeBottom() {
-        mDino.tryDuck();
-    }
-
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (!mStarted) {
             restart();
         } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            mDino.startJump();
+            if (motionEvent.getX() < view.getWidth() / 2) {
+                mDino.startDuck();
+            } else {
+                mDino.startJump();
+            }
         } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            mDino.endJump();
+            if (motionEvent.getX() < view.getWidth() / 2) {
+                mDino.endDuck();
+            } else {
+                mDino.endJump();
+            }
+        } else {
+            return false;
         }
-        return super.onTouch(view, motionEvent);
+        return true;
     }
 
     @Override

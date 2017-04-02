@@ -108,9 +108,15 @@ public class Dino extends BaseEntity {
         animFrameY = vy;
     }
 
-    public void tryDuck() {
+    public void startDuck() {
         if (currStatus == DinoState.RUNNING) {
             update(DinoState.DUCKING);
+        }
+    }
+
+    public void endDuck() {
+        if (isDucking()) {
+            update(DinoState.RUNNING);
         }
     }
 

@@ -1,7 +1,6 @@
 package kpi.ua.dinojump.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -27,11 +26,11 @@ public class GameView extends SurfaceView implements GameViewContract {
 
     private final GameLogic mGameLogic;
 
-    public GameView(Context context, Bitmap baseBitmap) {
+    public GameView(Context context) {
         super(context);
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         Point dimensions = new Point(600, 150);
-        mGameLogic = new GameLogic(getContext(), this, dimensions, FPS);
+        mGameLogic = new GameLogic(this, dimensions, FPS);
         setOnTouchListener(mGameLogic);
     }
 
