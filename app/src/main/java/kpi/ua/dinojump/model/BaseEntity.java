@@ -12,7 +12,9 @@ public abstract class BaseEntity {
 
     protected Point spritePos;
 
-    public Rect getScaledSource(int l, int t, int w, int h) {
+    public abstract void draw(Canvas canvas);
+
+    protected Rect getScaledSource(int l, int t, int w, int h) {
         Configuration conf = Configuration.get();
         double scale = conf.getBitmapScale();
         int rl = (int) (l * scale);
@@ -22,7 +24,7 @@ public abstract class BaseEntity {
         return new Rect(rl, rt, rr, rb);
     }
 
-    public Rect getScaledTarget(int l, int t, int w, int h) {
+    protected Rect getScaledTarget(int l, int t, int w, int h) {
         Configuration conf = Configuration.get();
         int sx = conf.getStartX();
         int sy = conf.getStartY();
@@ -38,9 +40,7 @@ public abstract class BaseEntity {
         return Configuration.get().getBaseBitmap();
     }
 
-    public double getRandomNum(int min, int max) {
+    protected double getRandomNum(int min, int max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
-    public abstract void draw(Canvas canvas);
 }

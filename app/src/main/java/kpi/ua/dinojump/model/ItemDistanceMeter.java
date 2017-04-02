@@ -33,98 +33,94 @@ public class ItemDistanceMeter extends BaseEntity {
     private long distance;
 
     public ItemDistanceMeter(Point pos, int w) {
-        this.spritePos = pos;
-        this.xPos = 0;
-        this.yPos = 5;
-        this.maxScore = 0;
-        this.highScore = 0;
-        this.achievement = false;
-        this.flashTimer = 0;
-        this.flashIterations = 0;
-        this.maxScoreUnits = MAX_DISTANCE_UNITS;
-        this.init(w);
+        spritePos = pos;
+        xPos = 0;
+        yPos = 5;
+        maxScore = 0;
+        highScore = 0;
+        achievement = false;
+        flashTimer = 0;
+        flashIterations = 0;
+        maxScoreUnits = MAX_DISTANCE_UNITS;
+        init(w);
     }
 
     private void init(int width) {
         String maxDistanceStr = "";
-        this.calculateXPosition(width);
-        this.maxScore = this.maxScoreUnits;
-        for (int i = 0; i < this.maxScoreUnits; i++) {
+        calculateXPosition(width);
+        maxScore = maxScoreUnits;
+        for (int i = 0; i < maxScoreUnits; i++) {
             maxDistanceStr += '9';
         }
-        this.maxScore = Integer.parseInt(maxDistanceStr);
+        maxScore = Integer.parseInt(maxDistanceStr);
     }
 
     private void calculateXPosition(int canvasWidth) {
-        this.xPos = canvasWidth - (DEST_WIDTH * (this.maxScoreUnits + 1));
-    }
-
-    public void update(long deltaTime) {
-        update(deltaTime, 0.);
+        xPos = canvasWidth - (DEST_WIDTH * (maxScoreUnits + 1));
     }
 
     public void update(long deltaTime, double distance) {
-        if (this.achievement) {
+        if (achievement) {
             // Control flashing of the score on reaching achievement.
             animateScore(deltaTime);
         } else {
             paint = true;
-            distance = this.getActualDistance(distance);
+            distance = getActualDistance(distance);
             // Score has gone beyond the initial digit count.
-            if (distance > this.maxScore && this.maxScoreUnits == MAX_DISTANCE_UNITS) {
-                this.maxScoreUnits++;
+            if (distance > maxScore && maxScoreUnits == MAX_DISTANCE_UNITS) {
+                maxScoreUnits++;
             } else {
                 this.distance = 0;
             }
             if (distance > 0) {
                 this.distance = (long) distance;
                 if (distance % ACHIEVEMENT_DISTANCE == 0) {
-                    this.achievement = true;
-                    this.flashTimer = 0;
+                    achievement = true;
+                    flashTimer = 0;
                 }
             }
         }
     }
 
     private void animateScore(long deltaTime) {
-        if (this.flashIterations <= FLASH_ITERATIONS) {
-            this.flashTimer += deltaTime;
-            if (this.flashTimer < FLASH_DURATION) {
+        if (flashIterations <= FLASH_ITERATIONS) {
+            flashTimer += deltaTime;
+            if (flashTimer < FLASH_DURATION) {
                 paint = false;
-            } else if (this.flashTimer >
+            } else if (flashTimer >
                     FLASH_DURATION * 2) {
-                this.flashTimer = 0;
-                this.flashIterations++;
+                flashTimer = 0;
+                flashIterations++;
                 paint = true;
             } else {
                 paint = true;
             }
         } else {
             paint = true;
-            this.achievement = false;
-            this.flashIterations = 0;
-            this.flashTimer = 0;
+            achievement = false;
+            flashIterations = 0;
+            flashTimer = 0;
         }
     }
 
     public void draw(Canvas canvas) {
         int dis = (int) distance;
         if (paint) {
-            for (int i = 0; i < this.maxScoreUnits; i++) {
+            for (int i = 0; i < maxScoreUnits; i++) {
                 int v = (int) ((dis / Math.pow(10, i)) % 10);
-                this.drawNumber(canvas, this.maxScoreUnits - 1 - i, v, false);
+                drawNumber(canvas, maxScoreUnits - 1 - i, v, false);
             }
         }
-        for (int i = 0; i < this.maxScoreUnits; i++) {
+        for (int i = 0; i < maxScoreUnits; i++) {
             int v = (int) ((highScore / Math.pow(10, i)) % 10);
-            this.drawNumber(canvas, this.maxScoreUnits - 1 - i, v, true);
+            drawNumber(canvas, maxScoreUnits - 1 - i, v, true);
         }
     }
 
     private void drawNumber(Canvas canvas, int digitPos, int value, boolean opt_highScore) {
         int deltaX = xPos;
         if (opt_highScore) {
-            deltaX = this.xPos - (this.maxScoreUnits * 2) * WIDTH;
+            deltaX = xPos - (maxScoreUnits * 2) * WIDTH;
         }
         Rect sRect = getScaledSource(WIDTH * value + spritePos.x, spritePos.y, WIDTH, HEIGHT);
         Rect tRect = getScaledTarget(DEST_WIDTH * digitPos + deltaX, yPos + yPos, WIDTH, HEIGHT);
@@ -140,7 +136,7 @@ public class ItemDistanceMeter extends BaseEntity {
     }
 
     public void reset() {
-        update(0L);
+        update(0L, 0.);
         achievement = false;
     }
 }

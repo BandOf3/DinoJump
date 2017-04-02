@@ -119,14 +119,12 @@ public class GameLogic implements GameLogicContract, View.OnTouchListener  {
         mRunningTime = 0;
         mIntroFramesPassed = 0;
         mPlayingIntro = false;
-        mDino.setPlayingIntro(false);
     }
 
     private void startWithIntro() {
         if (!mStarted && !mGameOver) {
             log("startWithIntro");
             mPlayingIntro = true;
-            mDino.setPlayingIntro(true);
         } else if (mGameOver) {
             restart();
         }

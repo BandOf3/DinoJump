@@ -27,7 +27,6 @@ public class Dino extends BaseEntity {
     private DinoState preCrashState = null;
 
     private double velocityY;
-    private boolean playingIntro;
 
     private Rect collisionBox;
     private int xPos, yPos, animFrameX, animFrameY, currentFrame;
@@ -59,7 +58,7 @@ public class Dino extends BaseEntity {
         animFrames.put(DinoState.DUCKING, new AnimFrames(new int[]{262, 321}, 8));
     }
 
-    private void defaultUpdate() {
+    public void update() {
         if (isJumping()) {
             updateJump();
         }
@@ -71,10 +70,6 @@ public class Dino extends BaseEntity {
         collisionBox.bottom = yPos + HEIGHT;
     }
 
-    public void update() {
-        defaultUpdate();
-    }
-
     public void update(DinoState status) {
         if (status != null) {
             if (status == DinoState.CRASHED) {
@@ -84,11 +79,11 @@ public class Dino extends BaseEntity {
             currentFrame = 0;
             currentAnimFrames = animFrames.get(status).frames;
         }
-        defaultUpdate();
+        update();
     }
 
     private void updateJump() {
-        yPos += Math.round(velocityY/* * speedDropCoefficient*/);
+        yPos += Math.round(velocityY);
         velocityY += Constants.GRAVITY;
 
         // Back down at ground level. Jump completed.
@@ -137,8 +132,6 @@ public class Dino extends BaseEntity {
         Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
         int animFrameX = this.animFrameX;
         int animFrameY = this.animFrameY;
-        int sourceWidth = isDucking() ? WIDTH_DUCK : WIDTH;
-        int sourceHeight = HEIGHT;
         // Adjustments for sprite sheet position.
         animFrameX += spritePos.x;
         animFrameY += spritePos.y;
@@ -148,7 +141,7 @@ public class Dino extends BaseEntity {
         if (currStatus == DinoState.CRASHED && preCrashState == DinoState.DUCKING) {
             xPos++;
         }
-        Rect sRect = getScaledSource(animFrameX, animFrameY, sourceWidth, sourceHeight);
+        Rect sRect = getScaledSource(animFrameX, animFrameY, isDucking() ? WIDTH_DUCK : WIDTH, HEIGHT);
         Rect tRect = getScaledTarget(xPos, yPos, WIDTH, HEIGHT);
         canvas.drawBitmap(getBaseBitmap(), sRect, tRect, bitmapPaint);
     }
@@ -165,10 +158,6 @@ public class Dino extends BaseEntity {
             FPS = fps;
             frames = f;
         }
-    }
-
-    public void setPlayingIntro(boolean playingIntro) {
-        this.playingIntro = playingIntro;
     }
 
     private boolean isDucking() {
