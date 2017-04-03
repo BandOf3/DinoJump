@@ -1,4 +1,4 @@
-package kpi.ua.dinojump.entities;
+package kpi.ua.dinojump.model;
 
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -6,60 +6,46 @@ import android.graphics.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import kpi.ua.dinojump.Runner;
+import kpi.ua.dinojump.Constants;
 
 
 public class Horizon extends BaseEntity {
 
-    private static class config {
-        public static double BG_CLOUD_SPEED = 0.2;
-        public static double CLOUD_FREQUENCY = .5;
-        public static int MAX_CLOUDS = 6;
-    }
+    private final static double BG_CLOUD_SPEED = 0.2;
+    private final static double CLOUD_FREQUENCY = .5;
+    private final static int MAX_CLOUDS = 6;
 
     private Point dimensions;
     private double cloudSpeed;
     private List<Cloud> clouds;
     private double cloudFrequency;
     private double gapCoefficient;
-    public HorizonLine horizonLine;
+    private HorizonLine horizonLine;
     private List<Obstacle> obstacles;
     private List<Integer> obstacleHistory;
 
     public Horizon(Point dimension, double gapCoefficient) {
         this.dimensions = dimension;
         this.gapCoefficient = gapCoefficient;
-        this.cloudFrequency = config.CLOUD_FREQUENCY;
+        this.cloudFrequency = CLOUD_FREQUENCY;
         this.clouds = new ArrayList<>();
         this.obstacles = new ArrayList<>();
         this.obstacleHistory = new ArrayList<>();
-        this.cloudSpeed = config.BG_CLOUD_SPEED;
+        this.cloudSpeed = BG_CLOUD_SPEED;
         this.init();
     }
 
     private void init() {
         this.addCloud();
-        this.horizonLine = new HorizonLine(Runner.spritePos.HORIZON);
+        this.horizonLine = new HorizonLine(Constants.HORIZON);
     }
 
     private void addCloud() {
-        this.clouds.add(new Cloud(Runner.spritePos.CLOUD,
+        this.clouds.add(new Cloud(Constants.CLOUD,
                 this.dimensions.x));
     }
 
-    public void update(Object... args) {
-        long deltaTime = 0;
-        double currentSpeed = 0;
-        boolean updateObstacles = false;
-        if (args.length > 0) {
-            deltaTime = (long) args[0];
-            if (args.length > 1) {
-                currentSpeed = (double) args[1];
-                if (args.length > 2) {
-                    updateObstacles = (boolean) args[2];
-                }
-            }
-        }
+    public void update(long deltaTime, double currentSpeed, boolean updateObstacles) {
         this.horizonLine.update(deltaTime, currentSpeed);
         this.updateClouds(deltaTime, currentSpeed);
         if (updateObstacles) {
@@ -68,13 +54,12 @@ public class Horizon extends BaseEntity {
     }
 
     public void draw(Canvas canvas) {
-        for (Cloud c : clouds) {
-            c.draw(canvas);
+        for (Cloud cloud : clouds) {
+            cloud.draw(canvas);
         }
-
         horizonLine.draw(canvas);
-        for (Obstacle o : obstacles) {
-            o.draw(canvas);
+        for (Obstacle obstacle : obstacles) {
+            obstacle.draw(canvas);
         }
     }
 
@@ -86,7 +71,7 @@ public class Horizon extends BaseEntity {
             Obstacle obstacle = this.obstacles.get(i);
             obstacle.update(deltaTime, currentSpeed);
             // Clean up existing obstacles.
-            if (obstacle.remove) {
+            if (obstacle.isRemove()) {
                 delObs = i;
             }
         }
@@ -94,12 +79,12 @@ public class Horizon extends BaseEntity {
             obstacles.remove(delObs);
         if (!this.obstacles.isEmpty()) {
             Obstacle lastObstacle = this.obstacles.get(this.obstacles.size() - 1);
-            if (lastObstacle != null && !lastObstacle.followingObstacleCreated &&
+            if (lastObstacle != null && !lastObstacle.followingObstacleWasCreated() &&
                     lastObstacle.isVisible() &&
-                    (lastObstacle.xPos + lastObstacle.width + lastObstacle.gap) <
+                    (lastObstacle.getXPosition() + lastObstacle.getWidth() + lastObstacle.getGap()) <
                             this.dimensions.x) {
                 this.addNewObstacle(currentSpeed);
-                lastObstacle.followingObstacleCreated = true;
+                lastObstacle.setFollowingObstacleCreated(true);
             }
         } else {
             this.addNewObstacle(currentSpeed);
@@ -111,11 +96,10 @@ public class Horizon extends BaseEntity {
         Obstacle.types.ObstacleTypes obstacleType = Obstacle.types.getObstacleTypes(obstacleTypeIndex);
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
-        if (this.duplicateObstacleCheck(obstacleType.type) ||
-                currentSpeed < obstacleType.minSpeed) {
+        if (this.duplicateObstacleCheck(obstacleType.type) || currentSpeed < obstacleType.minSpeed) {
             this.addNewObstacle(currentSpeed);
         } else {
-            this.obstacles.add(new Obstacle(Obstacle.types.getObstacleTypes(obstacleTypeIndex), this.dimensions, this.gapCoefficient, currentSpeed));
+            this.obstacles.add(new Obstacle(obstacleType, dimensions, gapCoefficient, currentSpeed));
             this.obstacleHistory.add(obstacleType.type);
             if (this.obstacleHistory.size() > 1) {
                 obstacleHistory.remove(0);
@@ -123,31 +107,30 @@ public class Horizon extends BaseEntity {
         }
     }
 
-    public boolean duplicateObstacleCheck(int nextObstacleType) {
+    private boolean duplicateObstacleCheck(int nextObstacleType) {
         int duplicateCount = 0;
         for (int i = 0; i < this.obstacleHistory.size(); i++) {
-            duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ?
-                    duplicateCount + 1 : 0;
+            duplicateCount = this.obstacleHistory.get(i) == nextObstacleType ? duplicateCount + 1 : 0;
         }
-        return duplicateCount >= Runner.config.MAX_OBSTACLE_DUPLICATION;
+        return duplicateCount >= Constants.MAX_OBSTACLE_DUPLICATION;
     }
 
     private void updateClouds(long deltaTime, double speed) {
         double cloudSpeed = this.cloudSpeed / 1000 * deltaTime * speed;
         int numClouds = clouds.size();
         if (numClouds > 0) {
-            for (Cloud c : clouds) {
-                c.update(deltaTime, cloudSpeed);
+            for (Cloud cloud : clouds) {
+                cloud.update(cloudSpeed);
             }
             Cloud lastCloud = clouds.get(numClouds - 1);
-            if (numClouds < config.MAX_CLOUDS &&
-                    (this.dimensions.x - lastCloud.xPos) > lastCloud.cloudGap &&
+            if (numClouds < MAX_CLOUDS &&
+                    (this.dimensions.x - lastCloud.getXPosition()) > lastCloud.getCloudGap() &&
                     this.cloudFrequency > Math.random()) {
                 this.addCloud();
             }
-            List<Cloud> newClouds = new ArrayList(clouds);
+            List<Cloud> newClouds = new ArrayList<>(clouds);
             for (int i = 0; i < newClouds.size(); i++) {
-                if (newClouds.get(i).remove) {
+                if (newClouds.get(i).removeItemFromScreen()) {
                     clouds.remove(i);
                     break;
                 }
