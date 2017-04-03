@@ -30,7 +30,7 @@ public class GameView extends SurfaceView implements GameViewContract {
         super(context);
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         Point dimensions = new Point(600, 150);
-        mGameLogic = new GameLogic(this, dimensions, FPS);
+        mGameLogic = new GameLogic(this, dimensions, FPS, context);
         setOnTouchListener(mGameLogic);
     }
 

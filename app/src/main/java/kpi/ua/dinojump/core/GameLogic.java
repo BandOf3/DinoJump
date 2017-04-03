@@ -1,5 +1,6 @@
 package kpi.ua.dinojump.core;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -42,13 +43,13 @@ public class GameLogic implements GameLogicContract, View.OnTouchListener  {
     private final GameViewContract mGameContract;
     private final List<BaseEntity> mDrawableEntities;
 
-    public GameLogic(GameViewContract gameContract, Point dimensions, int fps) {
+    public GameLogic(GameViewContract gameContract, Point dimensions, int fps, Context context) {
         this.mPlaying = true;
         this.mGameContract = gameContract;
         mFps = fps;
         mCurrentSpeed = Constants.SPEED;
         mHorizon = new Horizon(dimensions, Constants.GAP_COEFFICIENT);
-        mDistanceMeter = new ItemDistanceMeter(Constants.TEXT_SPRITE, dimensions.x);
+        mDistanceMeter = new ItemDistanceMeter(Constants.TEXT_SPRITE, dimensions.x, context);
         mDino = new Dino(Constants.TREX);
         mDrawableEntities = Arrays.asList(mHorizon, mDistanceMeter, mDino);
     }

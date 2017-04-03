@@ -1,8 +1,12 @@
 package kpi.ua.dinojump.model;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class ItemDistanceMeter extends BaseEntity {
@@ -31,13 +35,15 @@ public class ItemDistanceMeter extends BaseEntity {
     private int flashTimer;
     private int flashIterations;
     private long distance;
+    private SharedPreferences highScoreSharedPreferences;
 
-    public ItemDistanceMeter(Point pos, int w) {
+    public ItemDistanceMeter(Point pos, int w, Context context) {
         spritePos = pos;
+        highScoreSharedPreferences = context.getSharedPreferences("HighScore", MODE_PRIVATE);
         xPos = 0;
         yPos = 5;
         maxScore = 0;
-        highScore = 0;
+        highScore = highScoreSharedPreferences.getLong("score", 0L);
         achievement = false;
         flashTimer = 0;
         flashIterations = 0;
@@ -133,6 +139,9 @@ public class ItemDistanceMeter extends BaseEntity {
 
     public void setHighScore(double highest) {
         highScore = getActualDistance(highest);
+        SharedPreferences.Editor editor = highScoreSharedPreferences.edit();
+        editor.putLong("score", highScore);
+        editor.commit();
     }
 
     public void reset() {
