@@ -3,6 +3,7 @@ package kpi.ua.dinojump.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Vibrator;
 import android.util.Log;
@@ -32,7 +33,10 @@ public class GameView extends SurfaceView implements GameViewContract {
         Point dimensions = new Point(600, 150);
         mGameLogic = new GameLogic(this, dimensions, FPS, context);
         setOnTouchListener(mGameLogic);
+
     }
+
+
 
     public GameLogic getGameLogic() {
         return mGameLogic;
@@ -72,8 +76,7 @@ public class GameView extends SurfaceView implements GameViewContract {
                     conf.setStartX(0);
                 }
             }
-            canvas.drawColor(Color.WHITE);
-
+            canvas.drawColor(Color.CYAN);
             for (BaseEntity e : mGameLogic.getDrawableEntities()) {
                 e.draw(canvas);
             }

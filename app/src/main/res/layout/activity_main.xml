@@ -9,14 +9,16 @@
     <Button
         android:id="@+id/play_button"
         android:text="Play Now"
+        android:onClick="onClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonScore"
+        android:layout_above="@+id/score_button"
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:id="@+id/buttonScore"
+        android:id="@+id/score_button"
         android:text="High Score"
+        android:onClick="onClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
