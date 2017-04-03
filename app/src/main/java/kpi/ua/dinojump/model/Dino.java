@@ -14,7 +14,6 @@ import kpi.ua.dinojump.Constants;
 
 public class Dino extends BaseEntity {
 
-    // TODO: Add width duck and check with pterodactyls
     private static final int HEIGHT = 47;
     private static final int WIDTH = 44;
     private static final int WIDTH_DUCK = 59;
@@ -67,7 +66,7 @@ public class Dino extends BaseEntity {
         animFrameY = 0;
         currentFrame = currentFrame == currentAnimFrames.length - 1 ? 0 : currentFrame + 1;
         collisionBox.left = xPos;
-        collisionBox.top = yPos;
+        collisionBox.top = yPos + (isDucking() ? HEIGHT : 0);
         collisionBox.right = xPos + (isDucking() ? WIDTH_DUCK : WIDTH);
         collisionBox.bottom = yPos + HEIGHT;
     }
