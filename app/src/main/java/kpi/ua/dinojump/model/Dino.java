@@ -15,10 +15,10 @@ import kpi.ua.dinojump.Constants;
 public class Dino extends BaseEntity {
 
     private static final int HEIGHT = 47;
+    private static final int HEIGHT_DUCK = 22;
     private static final int WIDTH = 44;
     private static final int WIDTH_DUCK = 59;
     private static int GROUND_POS = Constants.HEIGHT - HEIGHT - Constants.BOTTOM_PAD;
-
     //Possible dino states
     public enum DinoState {
         CRASHED, DUCKING, JUMPING, RUNNING, WAITING
@@ -66,7 +66,7 @@ public class Dino extends BaseEntity {
         animFrameY = 0;
         currentFrame = currentFrame == currentAnimFrames.length - 1 ? 0 : currentFrame + 1;
         collisionBox.left = xPos;
-        collisionBox.top = yPos + (isDucking() ? HEIGHT : 0);
+        collisionBox.top = yPos;
         collisionBox.right = xPos + (isDucking() ? WIDTH_DUCK : WIDTH);
         collisionBox.bottom = yPos + HEIGHT;
     }
@@ -102,12 +102,23 @@ public class Dino extends BaseEntity {
     public void startDuck() {
         if (currStatus == DinoState.RUNNING) {
             update(DinoState.DUCKING);
+            spritePos = Constants.TREX_DUCKING;
+            updateGroundAndYCoordinates();
         }
     }
 
     public void endDuck() {
         if (isDucking()) {
             update(DinoState.RUNNING);
+            spritePos = Constants.TREX;
+            updateGroundAndYCoordinates();
+        }
+    }
+
+    private void updateGroundAndYCoordinates() {
+        if (!isJumping()) {
+            GROUND_POS = Constants.HEIGHT - (isDucking() ? HEIGHT_DUCK : HEIGHT)- Constants.BOTTOM_PAD;
+            yPos = GROUND_POS;
         }
     }
 
@@ -131,15 +142,13 @@ public class Dino extends BaseEntity {
         // Adjustments for sprite sheet position.
         animFrameX += spritePos.x;
         animFrameY += spritePos.y;
-        Paint p = new Paint();
-        p.setColor(Color.RED);
-        p.setStrokeWidth(2f);
         if (currStatus == DinoState.CRASHED && preCrashState == DinoState.DUCKING) {
             xPos++;
         }
         int rWidth = isDucking() ? WIDTH_DUCK : WIDTH;
-        Rect sRect = getScaledSource(animFrameX, animFrameY, rWidth, HEIGHT);
-        Rect tRect = getScaledTarget(xPos, yPos, rWidth, HEIGHT);
+        int rHeight = isDucking() ? HEIGHT_DUCK : HEIGHT;
+        Rect sRect = getScaledSource(animFrameX, animFrameY, rWidth, rHeight);
+        Rect tRect = getScaledTarget(xPos, yPos, rWidth, rHeight);
         canvas.drawBitmap(getBaseBitmap(), sRect, tRect, bitmapPaint);
     }
 

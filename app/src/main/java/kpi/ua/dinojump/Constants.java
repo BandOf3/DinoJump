@@ -18,6 +18,7 @@ public class Constants {
     public static final Point HORIZON = new Point(2, 54);
     public static final Point CLOUD = new Point(86, 2);
     public static final Point TREX = new Point(677, 2);
+    public static final Point TREX_DUCKING = new Point(677, 22);
     public static final Point TEXT_SPRITE = new Point(484, 2);
     public static final Point CACTUS_LARGE = new Point(332, 2);
     public static final Point CACTUS_SMALL = new Point(228, 2);
