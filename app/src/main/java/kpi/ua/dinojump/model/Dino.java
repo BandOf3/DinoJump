@@ -18,7 +18,8 @@ public class Dino extends BaseEntity {
     private static final int HEIGHT_DUCK = 22;
     private static final int WIDTH = 44;
     private static final int WIDTH_DUCK = 59;
-    private static int GROUND_POS = Constants.HEIGHT - HEIGHT - Constants.BOTTOM_PAD;
+    private int GROUND_POS;
+
     //Possible dino states
     public enum DinoState {
         CRASHED, DUCKING, JUMPING, RUNNING, WAITING
@@ -36,17 +37,20 @@ public class Dino extends BaseEntity {
 
     public Dino(Point s) {
         spritePos = s;
-        // Position when on the ground.
-        currStatus = DinoState.WAITING;
         init();
     }
 
     private void init() {
         initAnimationFrames();
+        updateGroundPosition();
         yPos = GROUND_POS;
         xPos = 100;
         collisionBox = new Rect(xPos, yPos, WIDTH, HEIGHT);
         update(DinoState.WAITING);
+    }
+
+    private void updateGroundPosition() {
+        GROUND_POS = Constants.HEIGHT - (isDucking() ? HEIGHT_DUCK : HEIGHT) - Constants.BOTTOM_PAD;
     }
 
     private void initAnimationFrames() {
@@ -61,6 +65,10 @@ public class Dino extends BaseEntity {
     public void update() {
         if (isJumping()) {
             updateJump();
+        } else {
+            // update y coordinate
+            updateGroundPosition();
+            yPos = GROUND_POS;
         }
         animFrameX = currentAnimFrames[currentFrame];
         animFrameY = 0;
@@ -74,6 +82,7 @@ public class Dino extends BaseEntity {
     public void update(DinoState status) {
         if (status != null) {
             if (status == DinoState.CRASHED) {
+                if (isDucking()) endDuck();  // for the correct yPos after reset state
                 preCrashState = currStatus;
             }
             currStatus = status;
@@ -94,7 +103,7 @@ public class Dino extends BaseEntity {
     }
 
     public void reset() {
-        yPos = GROUND_POS;
+        if (isDucking()) endDuck();
         velocityY = 0;
         update(DinoState.RUNNING);
     }
@@ -103,7 +112,6 @@ public class Dino extends BaseEntity {
         if (currStatus == DinoState.RUNNING) {
             update(DinoState.DUCKING);
             spritePos = Constants.TREX_DUCKING;
-            updateGroundAndYCoordinates();
         }
     }
 
@@ -111,16 +119,9 @@ public class Dino extends BaseEntity {
         if (isDucking()) {
             update(DinoState.RUNNING);
             spritePos = Constants.TREX;
-            updateGroundAndYCoordinates();
         }
     }
 
-    private void updateGroundAndYCoordinates() {
-        if (!isJumping()) {
-            GROUND_POS = Constants.HEIGHT - (isDucking() ? HEIGHT_DUCK : HEIGHT)- Constants.BOTTOM_PAD;
-            yPos = GROUND_POS;
-        }
-    }
 
     public void startJump() {
         if (!isJumping()) {
